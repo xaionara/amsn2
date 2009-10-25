@@ -12,10 +12,6 @@ class aMSNContactListWindow(object):
         self._clwiget is an aMSNContactListWidget 
     """
 
-    def __init__(self, amsn_core, parent):
-        em = amsn_core._event_manager
-        em.register(em.events.PERSONALINFO_UPDATED, self.myInfoUpdated)
-
     def show(self):
         """ Show the contact list window """
         raise NotImplementedError
@@ -44,13 +40,12 @@ class aMSNContactListWindow(object):
         currentMedia,...)"""
         raise NotImplementedError
 
+    def getContactListWidget(self):
+        """This will allow the core to access the widget"""
+        raise NotImplementedError
+
 class aMSNContactListWidget(object):
     """ This interface implements the contact list of the UI """
-    def __init__(self, amsn_core, parent):
-        em = amsn_core._event_manager
-        em.register(em.events.CLVIEW_UPDATED, self.contactListUpdated)
-        em.register(em.events.GROUPVIEW_UPDATED, self.groupUpdated)
-        em.register(em.events.CONTACTVIEW_UPDATED, self.contactUpdated)
 
     def show(self):
         """ Show the contact list widget """

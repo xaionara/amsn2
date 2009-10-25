@@ -30,7 +30,7 @@ class aMSNConversationManager:
         #TODO:
         #contacts should be a list of contact view
         # for the moment, always create a new win
-        win = self._core._gui.gui.aMSNChatWindow(self)
+        win = self._core._ui_manager.loadChatWindow(self)
         self._wins.append(win)
         return win
 

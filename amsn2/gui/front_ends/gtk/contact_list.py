@@ -43,7 +43,6 @@ class aMSNContactListWindow(base.aMSNContactListWindow, gtk.VBox):
     def __init__(self, amsn_core, parent):
         '''Constructor'''
         gtk.VBox.__init__(self)
-        base.aMSNContactListWindow.__init__(self, amsn_core, parent)
 
         self._amsn_core = amsn_core
         self._main_win = parent
@@ -279,14 +278,15 @@ class aMSNContactListWindow(base.aMSNContactListWindow, gtk.VBox):
         for key in self.status_values:
             if self.status_values[key] == status:
                 break
-        # FIXME: changing status to 'offline' will disconnect, so return to login window
         if key != self._myview.presence:
             self._myview.presence = key
+
+    def getContactListWidget(self):
+        return self._clwidget
 
 class aMSNContactListWidget(base.aMSNContactListWidget, gtk.TreeView):
     def __init__(self, amsn_core, parent):
         """Constructor"""
-        base.aMSNContactListWidget.__init__(self, amsn_core, parent)
         gtk.TreeView.__init__(self)
 
         self._amsn_core = amsn_core
