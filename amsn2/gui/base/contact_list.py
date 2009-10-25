@@ -11,6 +11,9 @@ class aMSNContactListWindow(object):
     """ This interface represents the main Contact List Window
         self._clwiget is an aMSNContactListWidget 
     """
+    def __init__(self, amsn_core, parent):
+        """Initialize the interface. You should store the reference to the core in here """
+        raise NotImplementedError
 
     def show(self):
         """ Show the contact list window """
@@ -46,6 +49,9 @@ class aMSNContactListWindow(object):
 
 class aMSNContactListWidget(object):
     """ This interface implements the contact list of the UI """
+    def __init__(self, amsn_core, parent):
+        """Initialize the interface. You should store the reference to the core in here """
+        raise NotImplementedError
 
     def show(self):
         """ Show the contact list widget """
