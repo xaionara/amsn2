@@ -236,7 +236,7 @@ class aMSNContactListWindow(base.aMSNContactListWindow, gtk.VBox):
         parentWidget.set_relief(gtk.RELIEF_NONE)        # remove cool elevated effect
         
     def __onDisplayClicked(self, source):
-        self._amsn_core.changeDP()
+        self._myview.changeDP()
 
     def show(self):
         pass

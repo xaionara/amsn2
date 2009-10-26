@@ -200,32 +200,6 @@ class aMSNCore(object):
         logging.shutdown()
         exit(0)
 
-    # TODO: move to UImanager
-    def addContact(self):
-        def contactCB(account, invite_msg):
-            if account:
-                self._contactlist_manager.addContact(account, self._account.view.email,
-                                                     invite_msg, [])
-        self._gui.gui.aMSNContactInputWindow(('Contact to add: ', 'Invite message: '),
-                                             contactCB, ())
-
-    def removeContact(self):
-        def contactCB(account):
-            if account:
-                try:
-                    papyon_contact = self._contactlist_manager._papyon_addressbook.\
-                                                    contacts.search_by('account', account)[0]
-                except IndexError:
-                    self._gui.gui.aMSNErrorWindow('You don\'t have the %s contact!', account)
-                    return
-
-                self._contactlist_manager.removeContact(papyon_contact.id)
-
-        self._gui.gui.aMSNContactDeleteWindow('Contact to remove: ', contactCB, ())
-
-    def changeDP(self):
-        self._gui.gui.aMSNDPChooserWindow(self._account.set_dp ,self._backend_manager)
-
     def createMainMenuView(self):
         menu = MenuView()
         quitMenuItem = MenuItemView(MenuItemView.COMMAND, label="Quit",
@@ -237,9 +211,9 @@ class aMSNCore(object):
         mainMenu.addItem(quitMenuItem)
 
         addContactItem = MenuItemView(MenuItemView.COMMAND, label="Add Contact",
-                                      command=self.addContact)
+                                      command=self._contactlist_manager.addContact)
         removeContact = MenuItemView(MenuItemView.COMMAND, label='Remove contact',
-                                     command=self.removeContact)
+                                     command=self._contactlist_manager.removeContact)
 
         contactsMenu = MenuItemView(MenuItemView.CASCADE_MENU, label="Contacts")
         contactsMenu.addItem(addContactItem)

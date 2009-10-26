@@ -2,6 +2,9 @@
 from amsn2 import gui
 from views import *
 
+import logging
+logger = logging.getLogger('amsn2.ui_manager')
+
 class aMSNUserInterfaceManager(object):
     def __init__(self, core):
         self._core = core
@@ -91,10 +94,24 @@ class aMSNUserInterfaceManager(object):
     def showNotification(self, message):
         self._gui.aMSNNotificationWindow(message)
 
+    def showError(self, message):
+        self._gui.aMSNErrorWindow(message)
+
     def loadChatWindow(self, conv_manager):
         return self._gui.aMSNChatWindow(conv_manager)
 
     def loadChatWidget(self, conversation, window, cuids):
         return self._gui.aMSNChatWidget(conversation, window, cuids)
+
+    def loadContactInputWindow(self, callback):
+        return self._gui.aMSNContactInputWindow(('Contact to add: ', 'Invite message: '),
+                                                 callback, ())
+
+    def loadContactDeleteWindow(self, callback):
+        return self._gui.aMSNContactDeleteWindow('Contact to remove: ', callback, ())
+
+    def loadDPChooserWindow(self):
+        self._gui.aMSNDPChooserWindow(self._core._account.set_dp ,self._core._backend_manager)
+
 
 

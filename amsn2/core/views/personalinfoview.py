@@ -18,7 +18,7 @@ class PersonalInfoView(object):
         self._webcam = None
         self._mail_unread = None
 
-    def onDPChangeRequest(self):
+    def changeDP(self):
         self._personalinfo_manager._onDPChangeRequest()
 
     @rw_property

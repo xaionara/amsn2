@@ -52,6 +52,9 @@ class aMSNPersonalInfoManager:
                 break
         self._papyon_profile.presence = key
 
+    def _onDPChangeRequest(self):
+        self._core._ui_manager.loadDPChooserWindow()
+
     def _onDPChanged(self, dp_msnobj):
         self._papyon_profile.msn_object = dp_msnobj
 
