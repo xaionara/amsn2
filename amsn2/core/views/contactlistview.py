@@ -76,7 +76,7 @@ class ContactPopupMenu(MenuView):
         MenuView.__init__(self)
         remove = MenuItemView(MenuItemView.COMMAND,
                               label="Remove %s" % amsncontact.account,
-                              command= lambda: core._contactlist_manager.removeThisContact(amsncontact.uid))
+                              command= lambda: core._contactlist_manager.removeContactUid(amsncontact.uid))
         self.addItem(remove)
 
 class GroupPopupMenu(MenuView):
