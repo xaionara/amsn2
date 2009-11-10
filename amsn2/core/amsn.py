@@ -18,7 +18,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from amsn2 import gui
 from amsn2 import protocol
 from amsn2.backend import aMSNBackendManager
 from views import *
@@ -62,7 +61,7 @@ class aMSNCore(object):
         self.Presence = papyon.Presence
 
         self._options = options
-        self._gui_name = None
+        self._ui_name = None
         self._loop = None
         self._main = None
         self._account = None
@@ -102,7 +101,7 @@ class aMSNCore(object):
         @param ui_name: The name of the User Interface
         """
 
-        self._gui_name = ui_name
+        self._ui_name = ui_name
         self._ui_manager.loadUI(ui_name)
         self._loop = self._ui_manager.getLoop()
 
