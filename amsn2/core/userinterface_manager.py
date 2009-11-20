@@ -6,6 +6,7 @@ import logging
 logger = logging.getLogger('amsn2.ui_manager')
 
 class aMSNUserInterfaceManager(object):
+    front_ends = {}
     def __init__(self, core):
         self._core = core
         self._ui = None
@@ -13,17 +14,30 @@ class aMSNUserInterfaceManager(object):
         self._login = None
         self._contactlist = None
 
+    @staticmethod
+    def registerFrontEnd(name, module):
+        aMSNUserInterfaceManager.front_ends[name] = module
+
+    @staticmethod
+    def listFrontEnds():
+        return aMSNUserInterfaceManager.front_ends.keys()
+
+    @staticmethod
+    def frontEndExists(front_end):
+        return front_end in aMSNUserInterfaceManager.listFrontEnds()
+
     def loadUI(self, ui_name):
-        guim = gui.GUIManager(self._core, ui_name)
-        if guim.gui:
-            self._ui = guim.gui
+        if self.frontEndExists(ui_name):
+            self._ui = self.front_ends[ui_name].load()
 
             self._main = self._ui.aMSNMainWindow(self._core)
             self._core._main = self._main
             self._skin_manager = self._ui.SkinManager(self._core)
             self._core._skin_manager = self._skin_manager
+
         else:
-            logger.error('Unable to load UI %s' % ui_name)
+            logger.error('Unable to load UI %s. Available front ends are: %s'
+                         % (ui_name, str(self.listFrontEnds())))
             self._core.quit()
 
     def getLoop(self):

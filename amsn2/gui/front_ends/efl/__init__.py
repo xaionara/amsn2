@@ -1,5 +1,5 @@
 
-from amsn2 import gui
+from amsn2.core import aMSNUserInterfaceManager
 import sys
 import traceback
 
@@ -25,7 +25,7 @@ try:
     imp.find_module("ecore")
     imp.find_module("elementary")
 
-    gui.GUIManager.registerFrontEnd("efl", sys.modules[__name__])
+    aMSNUserInterfaceManager.registerFrontEnd("efl", sys.modules[__name__])
 
 except ImportError:
     pass

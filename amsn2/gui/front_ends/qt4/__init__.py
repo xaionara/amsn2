@@ -18,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from amsn2 import gui
+from amsn2.core import aMSNUserInterfaceManager
 import sys
 
 # Here we load the actual front end.
@@ -37,6 +37,6 @@ try:
     import imp
     imp.find_module("PyQt4")
 
-    gui.GUIManager.registerFrontEnd("qt4", sys.modules[__name__])
+    aMSNUserInterfaceManager.registerFrontEnd("qt4", sys.modules[__name__])
 except ImportError:
     pass

@@ -1,5 +1,5 @@
 
-from amsn2 import gui
+from amsn2.core import aMSNUserInterfaceManager
 import sys
 
 # Here we load the actual front end.
@@ -15,7 +15,7 @@ try:
     import imp
 
     imp.find_module("gtk")
-    gui.GUIManager.registerFrontEnd("gtk", sys.modules[__name__])
+    aMSNUserInterfaceManager.registerFrontEnd("gtk", sys.modules[__name__])
 
 except ImportError:
     pass

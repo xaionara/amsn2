@@ -1,5 +1,5 @@
 
-from amsn2 import gui
+from amsn2.core import aMSNUserInterfaceManager
 import sys
 
 # Here we load the actual front end.
@@ -13,7 +13,7 @@ def load():
 # dependency then register it to the guimanager
 try:
     import imp
-    gui.GUIManager.registerFrontEnd("web", sys.modules[__name__])
+    aMSNUserInterfaceManager.registerFrontEnd("web", sys.modules[__name__])
 
 except ImportError:
     pass

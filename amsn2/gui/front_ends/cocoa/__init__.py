@@ -1,5 +1,5 @@
 
-from amsn2 import gui
+from amsn2.core import aMSNUserInterfaceManager
 import sys
 
 # Here we load the actual front end.
@@ -17,7 +17,7 @@ try:
     imp.find_module('Foundation')
     imp.find_module('AppKit')
 
-    gui.GUIManager.registerFrontEnd("cocoa", sys.modules[__name__])
+    aMSNUserInterfaceManager.registerFrontEnd("cocoa", sys.modules[__name__])
 
 except ImportError:
     pass
