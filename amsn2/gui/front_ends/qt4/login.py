@@ -68,7 +68,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
             name = self._amsn_core.p2s[key]
             if (name == 'offline'): continue
             self.status_values[name] = status_n
-            self.status_dict[str.capitalize(name)] = name
+            self.status_dict[str.capitalize(name)] = key
             status_n = status_n +1
             self.ui.comboStatus.addItem(str.capitalize(name))
 
