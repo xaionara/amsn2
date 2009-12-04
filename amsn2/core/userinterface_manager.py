@@ -30,6 +30,7 @@ class aMSNUserInterfaceManager(object):
         if self.frontEndExists(ui_name):
             self._ui = self.front_ends[ui_name].load()
 
+            self._loop = self._ui.aMSNMainLoop(self)
             self._main = self._ui.aMSNMainWindow(self._core)
             self._core._main = self._main
             self._skin_manager = self._ui.SkinManager(self._core)
@@ -41,7 +42,7 @@ class aMSNUserInterfaceManager(object):
             self._core.quit()
 
     def getLoop(self):
-        return self._ui.aMSNMainLoop(self)
+        return self._loop
 
     def loadSplash(self):
         self._splash = self._ui.aMSNSplashScreen(self._core, self._main)
