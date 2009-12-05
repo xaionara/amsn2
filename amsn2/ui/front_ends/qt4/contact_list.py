@@ -73,9 +73,9 @@ class aMSNContactListWindow(base.aMSNContactListWindow):
         # TODO image, ...
         self._myview = view
         nk = view.nick
-        self.ui.nickName.setText(str(nk))
+        self._clwidget.ui.nickName.setText(str(nk))
         message = str(view.psm)+' '+str(view.current_media)
-        self.ui.statusMessage.setText('<i>'+message+'</i>')
+        self._clwidget.ui.statusMessage.setText('<i>'+message+'</i>')
         # TODO Add a combobox like the gtk ui?
         #self.ui.statusCombo.currentIndex(self.status_values[view.presence])
 
