@@ -79,6 +79,9 @@ class aMSNContactListWindow(base.aMSNContactListWindow):
         # TODO Add a combobox like the gtk ui?
         #self.ui.statusCombo.currentIndex(self.status_values[view.presence])
 
+    def getContactListWidget(self):
+        return self._clwidget
+
 class itemDelegate(QStyledItemDelegate):
     #Dooooon't touch anything here!!! Or it will break into a million pieces and you'll be really sorry!!!
     def paint(self, painter, option, index):
@@ -122,7 +125,6 @@ class itemDelegate(QStyledItemDelegate):
 
 class aMSNContactListWidget(StyledWidget, base.aMSNContactListWidget):
     def __init__(self, amsn_core, parent):
-        base.aMSNContactListWidget.__init__(self, amsn_core, parent)
         StyledWidget.__init__(self, parent._parent)
         self._amsn_core = amsn_core
         self.ui = Ui_ContactList()
