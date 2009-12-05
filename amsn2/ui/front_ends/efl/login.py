@@ -15,6 +15,7 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
         self._evas = parent._evas
         self._parent = parent
         self._account_views = []
+        self._ui_manager = self._amsn_core._ui_manager
 
         edje.frametime_set(1.0 / 30)
 
@@ -193,11 +194,7 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
         email = elementary.Entry.markup_to_utf8(self.username.entry_get()).strip()
         password = elementary.Entry.markup_to_utf8(self.password.entry_get()).strip()
 
-        accv = [accv for accv in self._account_views if accv.email == email]
-        if not accv:
-            accv = AccountView(self._amsn_core, email)
-        else:
-            accv = accv[0]
+        accv = self._ui_manager.getAccountViewFromEmail(email)
         accv.password = password
 
         accv.presence = self.presence_key

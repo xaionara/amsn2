@@ -14,7 +14,6 @@ import papyon
 
 class aMSNContactListWindow(elementary.Box, base.aMSNContactListWindow):
     def __init__(self, core, parent):
-        base.aMSNContactListWindow.__init__(self, core, parent)
         self._core = core
         self._evas = parent._evas
         self._parent = parent
@@ -53,6 +52,8 @@ class aMSNContactListWindow(elementary.Box, base.aMSNContactListWindow):
     def myInfoUpdated(self, view):
         self._personal_info.myInfoUpdated(view)
 
+    def getContactListWidget(self):
+        return self._clwidget
 
 class PersonalInfoWidget(elementary.Layout):
     def __init__(self, amsn_core, parent):
@@ -158,7 +159,6 @@ class PersonalInfoWidget(elementary.Layout):
 
 class aMSNContactListWidget(elementary.Box, base.aMSNContactListWidget):
     def __init__(self, core, parent):
-        base.aMSNContactListWidget.__init__(self, core, parent)
         elementary.Box.__init__(self, parent)
         self._core = core
         self._evas = parent._evas
