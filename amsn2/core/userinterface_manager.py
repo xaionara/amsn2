@@ -1,5 +1,4 @@
 
-from amsn2 import gui
 from views import *
 
 import logging
