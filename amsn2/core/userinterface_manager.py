@@ -127,5 +127,24 @@ class aMSNUserInterfaceManager(object):
     def loadDPChooserWindow(self):
         self._ui.aMSNDPChooserWindow(self._core._account.set_dp ,self._core._backend_manager)
 
+    # Common methods for all UI
+
+    def getAccountViewFromEmail(self, email):
+        """
+        Search in the list of accounts and return the view of the given email
+
+        @type email: str
+        @param email: email to find
+        @rtype: AccountView
+        @return: Returns AccountView if it was found, otherwise return None
+        """
+
+        accv = [accv for accv in self._login._account_views if accv.email == email]
+
+        if len(accv) == 0:
+            return None
+        else:
+            return accv[0]
+
 
 

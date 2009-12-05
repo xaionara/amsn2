@@ -42,6 +42,7 @@ class aMSNLoginWindow(gtk.VBox, base.aMSNLoginWindow):
         self._main_win = parent
         self._skin = amsn_core._skin_manager.skin
         self._theme_manager = self._amsn_core._theme_manager
+        self._ui_manager = self._amsn_core._ui_manager
         self.timer = None
         self.anim_phase = 1
         self.last_img = None
@@ -230,7 +231,7 @@ class aMSNLoginWindow(gtk.VBox, base.aMSNLoginWindow):
     def __switch_to_account(self, email):
         logger.info("Switching to account %s", email)
 
-        accv = self.getAccountViewFromEmail(email)
+        accv = self._ui_manager.getAccountViewFromEmail(email)
 
         if accv is None:
             accv = AccountView(self._amsn_core, email)
@@ -288,7 +289,7 @@ class aMSNLoginWindow(gtk.VBox, base.aMSNLoginWindow):
             return
 
         email = self.user.get_active_text()
-        accv = self.getAccountViewFromEmail(email)
+        accv = self._ui_manager.getAccountViewFromEmail(email)
 
         if accv is None:
             accv = AccountView(self._amsn_core, email)
@@ -340,7 +341,7 @@ class aMSNLoginWindow(gtk.VBox, base.aMSNLoginWindow):
     def __on_toggled_cb(self, source):
 
         email = self.user.get_active_text()
-        accv = self.getAccountViewFromEmail(email)
+        accv = self._ui_manager.getAccountViewFromEmail(email)
 
         if accv is None:
             accv = AccountView(self._amsn_core, email)
