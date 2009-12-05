@@ -18,7 +18,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from amsn2 import gui
 from amsn2 import protocol
 from amsn2.backend import aMSNBackendManager
 from views import *
@@ -29,6 +28,7 @@ from oim_manager import *
 from theme_manager import *
 from personalinfo_manager import *
 from event_manager import *
+from userinterface_manager import *
 
 import papyon
 import logging
@@ -60,16 +60,13 @@ class aMSNCore(object):
                     papyon.Presence.OFFLINE:"offline"}
         self.Presence = papyon.Presence
 
-        self._event_manager = aMSNEventManager(self)
         self._options = options
-
-        self._gui_name = None
-        self._gui = None
+        self._ui_name = None
         self._loop = None
         self._main = None
         self._account = None
-        self.loadUI(self._options.front_end)
 
+        self._event_manager = aMSNEventManager(self)
         self._backend_manager = aMSNBackendManager(self)
         self._account_manager = aMSNAccountManager(self, options)
         self._theme_manager = aMSNThemeManager(self)
@@ -77,6 +74,7 @@ class aMSNCore(object):
         self._oim_manager = aMSNOIMManager(self)
         self._conversation_manager = aMSNConversationManager(self)
         self._personalinfo_manager = aMSNPersonalInfoManager(self)
+        self._ui_manager = aMSNUserInterfaceManager(self)
 
         # TODO: redirect the logs somewhere, something like ctrl-s ctrl-d for amsn-0.9x
         logging.basicConfig(level=logging.WARNING)
@@ -91,6 +89,8 @@ class aMSNCore(object):
         else:
             logger.setLevel(logging.WARNING)
 
+        self.loadUI(self._options.front_end)
+
     def run(self):
         self._main.show()
         self._loop.run()
@@ -101,14 +101,9 @@ class aMSNCore(object):
         @param ui_name: The name of the User Interface
         """
 
-        self._gui_name = ui_name
-        self._gui = gui.GUIManager(self, self._gui_name)
-        if not self._gui.gui:
-            print "Unable to load UI %s" %(self._gui_name,)
-            self.quit()
-        self._loop = self._gui.gui.aMSNMainLoop(self)
-        self._main = self._gui.gui.aMSNMainWindow(self)
-        self._skin_manager = self._gui.gui.SkinManager(self)
+        self._ui_name = ui_name
+        self._ui_manager.loadUI(ui_name)
+        self._loop = self._ui_manager.getLoop()
 
     def switchToUI(self, ui_name):
         """
@@ -123,24 +118,10 @@ class aMSNCore(object):
         # TODO : load the accounts from disk and all settings
         # then show the login window if autoconnect is disabled
 
-        self._main.setTitle("aMSN 2 - Loading")
+        self._ui_manager.loadSplash()
 
-
-        splash = self._gui.gui.aMSNSplashScreen(self, self._main)
-        image = ImageView()
-        image.load("Filename","/path/to/image/here")
-
-        splash.setImage(image)
-        splash.setText("Loading...")
-        splash.show()
-
-        login = self._gui.gui.aMSNLoginWindow(self, self._main)
-
-        login.setAccounts(self._account_manager.getAvailableAccountViews())
-
-        splash.hide()
-        self._main.setTitle("aMSN 2 - Login")
-        login.show()
+        accounts = self._account_manager.getAvailableAccountViews()
+        self._ui_manager.loadLogin(accounts)
 
         menu = self.createMainMenuView()
         self._main.setMenu(menu)
@@ -162,7 +143,6 @@ class aMSNCore(object):
 
     def signOutOfAccount(self):
         self._account.client.logout()
-        self._account.signOut()
 
     def connectionStateChanged(self, account, state):
         """
@@ -183,17 +163,17 @@ class aMSNCore(object):
 
         if state in status_str:
             account.login.onConnecting((state + 1)/ 7., status_str[state])
-        elif state == papyon.event.ClientState.OPEN:
-            clwin = self._gui.gui.aMSNContactListWindow(self, self._main)
-            clwin.account = account
-            account.clwin = clwin
-            account.login.hide()
-            self._main.setTitle("aMSN 2")
-            account.clwin.show()
-            account.login = None
 
+        elif state == papyon.event.ClientState.OPEN:
+            self._ui_manager.loadContactList()
             self._personalinfo_manager.setAccount(account)
             self._contactlist_manager.onCLDownloaded(account.client.address_book)
+
+        elif state == papyon.event.ClientState.CLOSED:
+            accounts = self._account_manager.getAvailableAccountViews()
+            self._ui_manager.loadLogin(accounts)
+            self._account.signOut()
+            self._account = None
 
     def idlerAdd(self, func):
         """
@@ -219,32 +199,6 @@ class aMSNCore(object):
         logging.shutdown()
         exit(0)
 
-    # TODO: move to UImanager
-    def addContact(self):
-        def contactCB(account, invite_msg):
-            if account:
-                self._contactlist_manager.addContact(account, self._account.view.email,
-                                                     invite_msg, [])
-        self._gui.gui.aMSNContactInputWindow(('Contact to add: ', 'Invite message: '),
-                                             contactCB, ())
-
-    def removeContact(self):
-        def contactCB(account):
-            if account:
-                try:
-                    papyon_contact = self._contactlist_manager._papyon_addressbook.\
-                                                    contacts.search_by('account', account)[0]
-                except IndexError:
-                    self._gui.gui.aMSNErrorWindow('You don\'t have the %s contact!', account)
-                    return
-
-                self._contactlist_manager.removeContact(papyon_contact.id)
-
-        self._gui.gui.aMSNContactDeleteWindow('Contact to remove: ', contactCB, ())
-
-    def changeDP(self):
-        self._gui.gui.aMSNDPChooserWindow(self._account.set_dp ,self._backend_manager)
-
     def createMainMenuView(self):
         menu = MenuView()
         quitMenuItem = MenuItemView(MenuItemView.COMMAND, label="Quit",
@@ -256,9 +210,9 @@ class aMSNCore(object):
         mainMenu.addItem(quitMenuItem)
 
         addContactItem = MenuItemView(MenuItemView.COMMAND, label="Add Contact",
-                                      command=self.addContact)
+                                      command=self._contactlist_manager.addContact)
         removeContact = MenuItemView(MenuItemView.COMMAND, label='Remove contact',
-                                     command=self.removeContact)
+                                     command=self._contactlist_manager.removeContact)
 
         contactsMenu = MenuItemView(MenuItemView.CASCADE_MENU, label="Contacts")
         contactsMenu.addItem(addContactItem)

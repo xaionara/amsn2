@@ -1,5 +1,5 @@
 import core
 import backend
-import gui
+import ui
 import protocol
-import gui.front_ends
+import ui.front_ends
