@@ -15,7 +15,7 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
         self._evas = parent._evas
         self._parent = parent
         self._account_views = []
-        self._ui_manager = self._amsn_core._ui_manager
+        self._ui_manager = self._core._ui_manager
 
         edje.frametime_set(1.0 / 30)
 
