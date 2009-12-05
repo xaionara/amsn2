@@ -48,6 +48,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
     def __init__(self, amsn_core, parent):
         StyledWidget.__init__(self, parent)
         self._amsn_core = amsn_core
+        self._ui_manager = self._amsn_core._ui_manager
         self.ui = Ui_Login()
         self.ui.setupUi(self)
         self._parent = parent
@@ -106,7 +107,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
 
     def __switch_to_account(self, email):
 
-        accv = self.getAccountViewFromEmail(email)
+        accv = self._ui_manager.getAccountViewFromEmail(email)
 
         if accv is None:
             accv = AccountView(self._amsn_core, email)
@@ -126,7 +127,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         self._parent.fadeIn(self.loginThrobber)
 
         email = self.ui.comboAccount.currentText()
-        accv = self.getAccountViewFromEmail(str(email))
+        accv = self._ui_manager.getAccountViewFromEmail(email)
 
         if accv is None:
             accv = AccountView(self._amsn_core, str(email))
@@ -145,7 +146,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
 
     def __on_toggled_cb(self, bool):
         email = str(self.ui.comboAccount.currentText())
-        accv = self.getAccountViewFromEmail(email)
+        accv = self._ui_manager.getAccountViewFromEmail(email)
 
         if accv is None:
             accv = AccountView(self._amsn_core, email)
