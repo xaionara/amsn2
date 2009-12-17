@@ -23,7 +23,13 @@ class aMSNLoginWindow(object):
         raise NotImplementedError
 
     def signin(self):
-        """ This method will be called when the core needs the login window to start the signin process """
+        """ This method will be called when the core needs the login window to start the signin process.
+        This is intended only to change the look of the login window. """
+        raise NotImplementedError
+
+    def signout(self):
+        """ This method will be called when the core needs the login window to stop the signin process.
+        This is intended only to change the look of the login window. """
         raise NotImplementedError
 
     def onConnecting(self, progress, message):

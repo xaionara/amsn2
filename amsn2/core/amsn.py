@@ -138,10 +138,12 @@ class aMSNCore(object):
         print "Signing in to account %s" % (accountview.email)
         self._account = self._account_manager.signinToAccount(accountview)
         self._account.login = login_window
+        self._account.login.signin()
         self._account.client = protocol.Client(self, self._account)
         self._account.client.connect(accountview.email, accountview.password)
 
     def signOutOfAccount(self):
+        self._account.login.signout()
         self._account.client.logout()
 
     def connectionStateChanged(self, account, state):
