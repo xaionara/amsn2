@@ -52,7 +52,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         self.ui = Ui_Login()
         self.ui.setupUi(self)
         self._parent = parent
-        QObject.connect(self.ui.pushSignIn, SIGNAL("clicked()"), self.signin)
+        QObject.connect(self.ui.pushSignIn, SIGNAL("clicked()"), self.__login_clicked)
         QObject.connect(self.ui.styleDesktop, SIGNAL("clicked()"), self.setTestStyle)
         QObject.connect(self.ui.styleRounded, SIGNAL("clicked()"), self.setTestStyle)
         QObject.connect(self.ui.styleWLM, SIGNAL("clicked()"), self.setTestStyle)
@@ -122,10 +122,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         self.ui.checkRememberPass.setChecked(accv.save_password)
         self.ui.checkSignInAuto.setChecked(accv.autologin)
 
-    def signin(self):
-        self.loginThrobber = LoginThrobber(self)
-        self._parent.fadeIn(self.loginThrobber)
-
+    def __login_clicked(self):
         email = self.ui.comboAccount.currentText()
         accv = self._ui_manager.getAccountViewFromEmail(email)
 
@@ -140,6 +137,13 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         accv.autologin = self.ui.checkSignInAuto.isChecked()
 
         self._amsn_core.signinToAccount(self, accv)
+
+    def signout(self):
+        pass
+
+    def signin(self):
+        self.loginThrobber = LoginThrobber(self)
+        self._parent.fadeIn(self.loginThrobber)
 
     def onConnecting(self, progress, message):
         self.loginThrobber.status.setText(str(message))
