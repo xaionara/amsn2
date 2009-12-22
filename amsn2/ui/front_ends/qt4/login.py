@@ -52,6 +52,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         self.ui = Ui_Login()
         self.ui.setupUi(self)
         self._parent = parent
+        self.loginThrobber = None
         QObject.connect(self.ui.pushSignIn, SIGNAL("clicked()"), self.__login_clicked)
         QObject.connect(self.ui.styleDesktop, SIGNAL("clicked()"), self.setTestStyle)
         QObject.connect(self.ui.styleRounded, SIGNAL("clicked()"), self.setTestStyle)
@@ -86,7 +87,8 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
             self.setStyleSheet(styleReader.readAll())
 
     def show(self):
-        self._parent.fadeIn(self)
+        if not self.loginThrobber:
+            self._parent.fadeIn(self)
 
     def hide(self):
         pass
