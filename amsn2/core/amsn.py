@@ -115,9 +115,6 @@ class aMSNCore(object):
         pass
 
     def mainWindowShown(self):
-        # TODO : load the accounts from disk and all settings
-        # then show the login window if autoconnect is disabled
-
         self._ui_manager.loadSplash()
 
         accounts = self._account_manager.getAvailableAccountViews()
