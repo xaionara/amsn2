@@ -48,7 +48,7 @@ class aMSNChatWidget(elementary.Box, base.aMSNChatWidget):
         self.outsc.size_hint_align_set(evas.EVAS_HINT_FILL,
                                        evas.EVAS_HINT_FILL)
         self.outsc.policy_set(elementary.ELM_SCROLLER_POLICY_AUTO,
-                      elementary.ELM_SCROLLER_POLICY_AUTO)
+                              elementary.ELM_SCROLLER_POLICY_AUTO)
         self.outsc.bounce_set(False, True)
         self.pack_end(self.outsc)
 
@@ -60,16 +60,13 @@ class aMSNChatWidget(elementary.Box, base.aMSNChatWidget):
         self.inbx = elementary.Box(parent)
         self.inbx.horizontal_set(True)
         self.inbx.homogenous_set(False)
-        self.inbx.size_hint_weight_set(evas.EVAS_HINT_EXPAND,
-                                       0.0)
-        self.inbx.size_hint_align_set(evas.EVAS_HINT_FILL,
-                                      0.5)
+        self.inbx.size_hint_weight_set(evas.EVAS_HINT_EXPAND, 0.0)
+        self.inbx.size_hint_align_set(evas.EVAS_HINT_FILL, 0.5)
         self.pack_end(self.inbx)
 
         self.insc = elementary.Scroller(parent)
-        self.insc.content_min_limit(0, 1)
-        self.insc.policy_set(elementary.ELM_SCROLLER_POLICY_OFF,
-                             elementary.ELM_SCROLLER_POLICY_OFF)
+        self.insc.policy_set(elementary.ELM_SCROLLER_POLICY_AUTO,
+                             elementary.ELM_SCROLLER_POLICY_AUTO)
         self.insc.size_hint_weight_set(evas.EVAS_HINT_EXPAND,
                                        evas.EVAS_HINT_EXPAND)
         self.insc.size_hint_align_set(evas.EVAS_HINT_FILL, evas.EVAS_HINT_FILL)
