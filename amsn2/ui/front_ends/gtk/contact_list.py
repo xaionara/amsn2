@@ -26,6 +26,7 @@ import os
 import gtk
 import pango
 import gobject
+import logging
 
 #import papyon
 from image import *
@@ -37,6 +38,8 @@ from amsn2.core.views import PersonalInfoView
 from amsn2.ui import base
 
 import common
+
+logger = logging.getLogger('amsn2.ui.gtk')
 
 class aMSNContactListWindow(base.aMSNContactListWindow, gtk.VBox):
     '''GTK contactlist'''
@@ -368,6 +371,7 @@ class aMSNContactListWidget(base.aMSNContactListWidget, gtk.TreeView):
 
     def __search_by_id(self, id):
         parent = self._model.get_iter_first()
+        children = []
 
         while (parent is not None):
             obj = self._model.get_value(parent, 3)
@@ -375,11 +379,14 @@ class aMSNContactListWidget(base.aMSNContactListWidget, gtk.TreeView):
             child = self._model.iter_children(parent)
             while (child is not None):
                 cobj = self._model.get_value(child, 3)
-                if (cobj == id): return child
+                if (cobj == id): children.append(child)
                 child = self._model.iter_next(child)
             parent = self._model.iter_next(parent)
 
-        return None
+        # many iters can have the same id,
+        # if a contact belongs to more than one group
+        if children: return children
+        else: return None
 
     def show(self):
         pass
@@ -407,7 +414,9 @@ class aMSNContactListWidget(base.aMSNContactListWidget, gtk.TreeView):
 
     def groupUpdated(self, groupview):
         if (groupview.uid == 0): groupview.uid = '0'
-        if groupview.uid not in self.groups: return
+        if groupview.uid not in self.groups:
+            logger.error('Group iter %s not found!' %(contactview.uid))
+            return
 
         giter = self.__search_by_id(groupview.uid)
         self._model.set_value(giter, 1, groupview)
@@ -428,25 +437,29 @@ class aMSNContactListWidget(base.aMSNContactListWidget, gtk.TreeView):
         # Remove unused contacts
         for cid in cuids:
             if cid not in self.contacts[groupview.uid]:
-                citer = self.__search_by_id(cid)
-                self._model.remove(citer)
+                citers = self.__search_by_id(cid)
+                citer = [c for c in citers if self._model.is_ancestor(giter, c)]
+                self._model.remove(citer[0])
 
     def contactUpdated(self, contactview):
         """
         @type contactview: ContactView
         """
 
-        citer = self.__search_by_id(contactview.uid)
-        if citer is None: return
+        citers = self.__search_by_id(contactview.uid)
+        if citers is None:
+            logger.error('Contact iter %s not found!' %(contactview.uid))
+            return
 
         img = Image(self._cwin._theme_manager, contactview.dp)
         #img = Image(self._cwin._theme_manager, contactview.icon)
         dp = img.to_pixbuf(28, 28)
 
-        self._model.set_value(citer, 0, dp)
-        self._model.set_value(citer, 1, contactview)
-        self._model.set_value(citer, 2, common.escape_pango(
-            str(contactview.name)))
+        for citer in citers:
+            self._model.set_value(citer, 0, dp)
+            self._model.set_value(citer, 1, contactview)
+            self._model.set_value(citer, 2, common.escape_pango(
+                                  str(contactview.name)))
         del dp
         gc.collect()
 
