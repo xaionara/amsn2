@@ -7,7 +7,7 @@ python-imaging
 maybe some other stuff...
 
 Before launching amsn2 you have to fetch the submodules (papyon). Instructions can be found on the aMSN forum:
-http://www.amsn-project.net/forums/viewtopic.php?t=5994
+http://www.amsn-project.net/forums/index.php/topic,5994.0.html
 
 If you launch ./amsn2.py and it gives an error, that error probably tells you which dependency you need...
 You can type ./amsn2.py --help for more info... and the front ends can be selected with -f :
