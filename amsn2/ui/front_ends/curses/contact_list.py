@@ -40,7 +40,7 @@ class aMSNContactListWindow(base.aMSNContactListWindow):
 class aMSNContactListWidget(base.aMSNContactListWidget):
 
     def __init__(self, amsn_core, parent):
-        super(aMSNContactListWidget, self).__init__(amsn_core, parent)
+        #super(aMSNContactListWidget, self).__init__(amsn_core, parent)
         self._groups_order = []
         self._groups = {}
         self._contacts = {}
