@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from amsn2.ui import base
 import sys
 
@@ -8,6 +9,7 @@ import gobject
 class aMSNMainLoop(base.aMSNMainLoop):
     def __init__(self, amsn_core):
         import os
+        self._amsn_core = amsn_core
         os.putenv("QT_NO_GLIB", "1") # FIXME: Temporary workaround for segfault
                                      #        caused by GLib Event Loop integration
         self.app = QApplication(sys.argv)
@@ -30,12 +32,10 @@ class aMSNMainLoop(base.aMSNMainLoop):
             iter += 1
 
     def idlerAdd(self, func):
-        print "idlerAdd req"
-        pass
+        gobject.idle_add(func)
 
     def timerAdd(self, delay, func):
-        print "timerAdd req"
-        pass
+        gobject.timeout_add(delay, func)
 
     def quit(self):
-        pass
+        self.gmainloop.quit()

@@ -64,9 +64,12 @@ class aMSNMainWindow(QMainWindow, base.aMSNMainWindow):
     def __activateNewWidget(self):
         self.stackedLayout.setCurrentIndex(self.stackedLayout.count()-1)
 
+    def __on_show(self):
+        self._amsn_core.mainWindowShown()
+
     def show(self):
         self.setVisible(True)
-        self._amsn_core.mainWindowShown()
+        self._amsn_core.idlerAdd(self.__on_show)
 
     def hide(self):
         self.setVisible(False)
@@ -87,3 +90,6 @@ class aMSNMainWindow(QMainWindow, base.aMSNMainWindow):
                     menu.addAction(subitem.label)
 
         self.setMenuBar(mb)
+
+    def set_view(self, view):
+        pass

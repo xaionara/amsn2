@@ -48,6 +48,9 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
     def __init__(self, amsn_core, parent):
         StyledWidget.__init__(self, parent)
         self._amsn_core = amsn_core
+        self._parent = parent
+        self._skin = amsn_core._skin_manager.skin
+        self._theme_manager = self._amsn_core._theme_manager
         self._ui_manager = self._amsn_core._ui_manager
         self.ui = Ui_Login()
         self.ui.setupUi(self)
@@ -68,11 +71,13 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         status_n = 0
         for key in self._amsn_core.p2s:
             name = self._amsn_core.p2s[key]
-            if (name == 'offline'): continue
-            self.status_values[name] = status_n
+            _, path = self._theme_manager.get_statusicon("buddy_%s" % name)
+            if (name == self._amsn_core.Presence.OFFLINE): continue
+            self.status_values[key] = status_n
             self.status_dict[str.capitalize(name)] = key
             status_n = status_n +1
-            self.ui.comboStatus.addItem(str.capitalize(name))
+            icon = QIcon(path)
+            self.ui.comboStatus.addItem(icon, str.capitalize(name))
 
     def setTestStyle(self):
         styleData = QFile()
