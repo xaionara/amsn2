@@ -191,6 +191,17 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
 
 
     def signin(self):
+        ### Autologin change: This method is no longer used to tell the core to start the login
+
+        #email = elementary.Entry.markup_to_utf8(self.username.entry_get()).strip()
+        #password = elementary.Entry.markup_to_utf8(self.password.entry_get()).strip()
+        #accv = self._ui_manager.getAccountViewFromEmail(email)
+        #accv.password = password
+        #accv.presence = self.presence_key
+        #accv.save = self.save.state_get()
+        #accv.save_password = self.save_password.state_get()
+        #accv.autologin = self.autologin.state_get()
+        #self._core.signinToAccount(self, accv)
         pass
 
     def signout(self):
