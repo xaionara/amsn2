@@ -191,19 +191,21 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
 
 
     def signin(self):
-        email = elementary.Entry.markup_to_utf8(self.username.entry_get()).strip()
-        password = elementary.Entry.markup_to_utf8(self.password.entry_get()).strip()
+        ### Autologin change: This method is no longer used to tell the core to start the login
 
-        accv = self._ui_manager.getAccountViewFromEmail(email)
-        accv.password = password
+        #email = elementary.Entry.markup_to_utf8(self.username.entry_get()).strip()
+        #password = elementary.Entry.markup_to_utf8(self.password.entry_get()).strip()
+        #accv = self._ui_manager.getAccountViewFromEmail(email)
+        #accv.password = password
+        #accv.presence = self.presence_key
+        #accv.save = self.save.state_get()
+        #accv.save_password = self.save_password.state_get()
+        #accv.autologin = self.autologin.state_get()
+        #self._core.signinToAccount(self, accv)
+        pass
 
-        accv.presence = self.presence_key
-
-        accv.save = self.save.state_get()
-        accv.save_password = self.save_password.state_get()
-        accv.autologin = self.autologin.state_get()
-
-        self._core.signinToAccount(self, accv)
+    def signout(self):
+        pass
 
     def onConnecting(self, progress, message):
         self._edje.signal_emit("connecting", "")
@@ -223,7 +225,23 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
 
 
     def __signin_cb(self, edje_obj, signal, source):
-        self.signin()
+        self._core.signinToAccount(self, self.__get_account())
 
     def __signin_button_cb(self, bt):
-        self.signin()
+        self._core.signinToAccount(self, self.__get_account())
+
+    def __get_account(self):
+        email = elementary.Entry.markup_to_utf8(self.username.entry_get()).strip()
+        password = elementary.Entry.markup_to_utf8(self.password.entry_get()).strip()
+
+        accv = self._ui_manager.getAccountViewFromEmail(email)
+        accv.password = password
+
+        accv.presence = self.presence_key
+
+        accv.save = self.save.state_get()
+        accv.save_password = self.save_password.state_get()
+        accv.autologin = self.autologin.state_get()
+
+        return accv
+

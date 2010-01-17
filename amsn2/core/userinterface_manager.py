@@ -55,9 +55,6 @@ class aMSNUserInterfaceManager(object):
         return self._splash
 
     def loadLogin(self, accounts):
-        self._login = self._ui.aMSNLoginWindow(self._core, self._main)
-        self._login.setAccounts(accounts)
-
         if self._splash:
             self._splash.hide()
             self._splash = None
@@ -65,7 +62,14 @@ class aMSNUserInterfaceManager(object):
         if self._contactlist:
             self.unloadContactList()
 
+        if not self._login:
+            self._login = self._ui.aMSNLoginWindow(self._core, self._main)
+            self._login.setAccounts(accounts)
+            if accounts[0].autologin:
+                self._core.signinToAccount(self._login, accounts[0])
+
         self._main.setTitle("aMSN 2 - Login")
+
         self._login.show()
 
     def unloadLogin(self):

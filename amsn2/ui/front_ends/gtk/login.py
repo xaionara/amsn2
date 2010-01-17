@@ -208,10 +208,10 @@ class aMSNLoginWindow(gtk.VBox, base.aMSNLoginWindow):
 
     def __login_clicked(self, *args):
         if self.login:
-            self.signout()
+            self._amsn_core.signOutOfAccount()
         else:
             self.accountview = self.__get_account()
-            self.signin()
+            self._amsn_core.signinToAccount(self, self.accountview)
 
     def show(self):
         if self.user.get_active_text() == "":
@@ -286,13 +286,8 @@ class aMSNLoginWindow(gtk.VBox, base.aMSNLoginWindow):
             # first in the list, default
             self.__switch_to_account(self._account_views[0].email)
 
-            if self.accountview.autologin:
-                self.signin()
-
     def signout(self):
         self.__show_boxes(False)
-
-        self._amsn_core.signOutOfAccount()
 
     def __get_account(self):
         if self.user.get_active_text() == "":
@@ -322,7 +317,6 @@ class aMSNLoginWindow(gtk.VBox, base.aMSNLoginWindow):
 
     def signin(self):
         self.__show_boxes(True)
-        self._amsn_core.signinToAccount(self, self.accountview)
 
     def onConnecting(self, progress, message):
         self.status.set_text(message)
