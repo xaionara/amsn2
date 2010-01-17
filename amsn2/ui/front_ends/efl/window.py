@@ -20,7 +20,8 @@ class aMSNWindow(elementary.Window, base.aMSNWindow):
 
         self._bg = elementary.Background(self)
         self.resize_object_add(self._bg)
-        self._bg.size_hint_weight_set(1.0, 1.0)
+        self._bg.size_hint_weight_set(evas.EVAS_HINT_EXPAND,
+                                      evas.EVAS_HINT_EXPAND)
         self._bg.show()
 
     @property
