@@ -1,5 +1,6 @@
 
 from constants import *
+import evas
 import ecore
 import ecore.evas
 import ecore.x
