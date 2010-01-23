@@ -70,6 +70,7 @@ class aMSNUserInterfaceManager(object):
                 self._core.signinToAccount(self._login, accounts[0])
         else:
             self._login.signout()
+            self._login.setAccounts(accounts)
 
         self._main.setTitle("aMSN 2 - Login")
 
