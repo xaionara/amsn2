@@ -1,4 +1,5 @@
 from constants import *
+import evas
 import edje
 import ecore
 import ecore.x
@@ -7,9 +8,8 @@ import elementary
 from amsn2.ui import base
 from amsn2.core.views import accountview
 
-#TODO: del
-#TODO: switch to elm_layout?
-class aMSNLoginWindow(base.aMSNLoginWindow):
+#TODO: del?
+class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
     def __init__(self, amsn_core, parent):
         self._core = amsn_core
         self._evas = parent._evas
@@ -19,24 +19,22 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
 
         edje.frametime_set(1.0 / 30)
 
-        try:
-            self._edje = edje.Edje(self._evas, file=THEME_FILE,
-                                group="login_screen")
-        except edje.EdjeLoadError, e:
-            raise SystemExit("error loading %s: %s" % (THEME_FILE, e))
+        elementary.Layout.__init__(self, parent)
+        self.file_set(THEME_FILE, "login_screen")
 
-        self._parent.resize_object_add(self._edje)
-        self._edje.size_hint_weight_set(1.0, 1.0)
-        self.show()
+        self._edje = self.edje_get()
 
-        sc = elementary.Scroller(self._edje)
+        self.size_hint_weight_set(evas.EVAS_HINT_EXPAND, evas.EVAS_HINT_EXPAND)
+        self.size_hint_align_set(evas.EVAS_HINT_FILL, evas.EVAS_HINT_FILL)
+
+        sc = elementary.Scroller(self)
         sc.content_min_limit(0, 1)
         sc.policy_set(elementary.ELM_SCROLLER_POLICY_OFF,
                       elementary.ELM_SCROLLER_POLICY_OFF);
         sc.size_hint_weight_set(1.0, 0.0)
         sc.size_hint_align_set(-1.0, -1.0)
-        self._edje.part_swallow("login_screen.username", sc)
-        self.username = elementary.Entry(self._edje)
+        self.content_set("login_screen.username", sc)
+        self.username = elementary.Entry(self)
         self.username.single_line_set(1)
         self.username.size_hint_weight_set(1.0, 0.0)
         self.username.size_hint_align_set(-1.0, -1.0)
@@ -44,14 +42,14 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
         self.username.show()
         sc.show()
 
-        sc = elementary.Scroller(self._edje)
+        sc = elementary.Scroller(self)
         sc.content_min_limit(0, 1)
         sc.policy_set(elementary.ELM_SCROLLER_POLICY_OFF,
                       elementary.ELM_SCROLLER_POLICY_OFF);
         sc.size_hint_weight_set(1.0, 0.0)
         sc.size_hint_align_set(-1.0, -1.0)
-        self._edje.part_swallow("login_screen.password", sc)
-        self.password = elementary.Entry(self._edje)
+        self.content_set("login_screen.password", sc)
+        self.password = elementary.Entry(self)
         self.password.single_line_set(1)
         self.password.password_set(1)
         self.password.size_hint_weight_set(1.0, 1.0)
@@ -60,7 +58,7 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
         self.password.show()
         sc.show()
 
-        self.presence = elementary.Hoversel(self._edje)
+        self.presence = elementary.Hoversel(self)
         self.presence.hover_parent_set(self._parent)
         for key in self._core.p2s:
             name = self._core.p2s[key]
@@ -93,10 +91,10 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
         ic.show()
         self.presence.size_hint_weight_set(0.0, 0.0)
         self.presence.size_hint_align_set(0.5, 0.5)
-        self._edje.part_swallow("login_screen.presence", self.presence)
+        self.content_set("login_screen.presence", self.presence)
         self.presence.show()
 
-        self.save = elementary.Check(self._edje)
+        self.save = elementary.Check(self)
         self.save.label_set("Remember Me")
         def cb(obj):
             if obj.state_get():
@@ -107,10 +105,10 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
                 self.autologin.disabled_set(True)
                 self.autologin.state_set(False)
         self.save.callback_changed_add(cb)
-        self._edje.part_swallow("login_screen.remember_me", self.save)
+        self.content_set("login_screen.remember_me", self.save)
         self.save.show()
 
-        self.save_password = elementary.Check(self._edje)
+        self.save_password = elementary.Check(self)
         self.save_password.label_set("Remember Password")
         self.save_password.disabled_set(True)
         def cb(obj):
@@ -120,33 +118,31 @@ class aMSNLoginWindow(base.aMSNLoginWindow):
                 self.autologin.disabled_set(True)
                 self.autologin.state_set(False)
         self.save_password.callback_changed_add(cb)
-        self._edje.part_swallow("login_screen.remember_password",
+        self.content_set("login_screen.remember_password",
                                 self.save_password)
         self.save_password.show()
 
-        self.autologin = elementary.Check(self._edje)
+        self.autologin = elementary.Check(self)
         self.autologin.label_set("Auto Login")
         self.autologin.disabled_set(True)
-        self._edje.part_swallow("login_screen.auto_login", self.autologin)
+        self.content_set("login_screen.auto_login", self.autologin)
         self.autologin.show()
 
         if self._edje.part_exists("login_screen.signin"):
-           self.signin_b = elementary.Button(self._edje)
+           self.signin_b = elementary.Button(self)
            self.signin_b.label_set("Sign in")
            self.signin_b.callback_clicked_add(self.__signin_button_cb)
            self.signin_b.show()
-           self._edje.part_swallow("login_screen.signin", self.signin_b)
+           self.content_set("login_screen.signin", self.signin_b)
         else:
            self._edje.signal_callback_add("signin", "*", self.__signin_cb)
 
+        self._parent.set_child(self)
+        self.show()
 
-    def show(self):
-        self._parent.resize_object_add(self._edje)
-        self._edje.show()
 
     def hide(self):
-        self._parent.resize_object_del(self._edje)
-        self._edje.hide()
+        elementary.Layout.hide(self)
         #FIXME: those are not hidden by self._edje.hide()
         self.password.hide()
         self.username.hide()
