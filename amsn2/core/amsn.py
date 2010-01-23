@@ -29,7 +29,7 @@ from theme_manager import *
 from personalinfo_manager import *
 from event_manager import *
 from userinterface_manager import *
-
+import sys
 import papyon
 import logging
 
@@ -196,7 +196,7 @@ class aMSNCore(object):
         if self._loop:
             self._loop.quit()
         logging.shutdown()
-        exit(0)
+        sys.exit(0)
 
     def createMainMenuView(self):
         menu = MenuView()
