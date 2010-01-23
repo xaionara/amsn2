@@ -54,7 +54,30 @@ class aMSNWindow(elementary.Window, base.aMSNWindow):
         self.title_set(text)
 
     def setMenu(self, mv):
-        pass
+        if self._tb:
+            print "QQQQQQ"
+            self._bx.unpack(self._tb)
+            self._tb.delete()
+        if mv is None:
+            return
+        self._tb = elementary.Toolbar(self)
+        self._tb.homogenous = False
+        self._tb.align = 0.0
+        self._tb.size_hint_weight_set(0.0, 0.0)
+        self._tb.size_hint_align_set(evas.EVAS_HINT_FILL, 0.0)
+        self._bx.pack_start(self._tb)
+        for item in mv.items:
+            if item.type is MenuItemView.CASCADE_MENU:
+                ic = None
+                if item.icon:
+                    #TODO
+                    pass
+                mi = self._tb.item_add(ic, item.label)
+                mi.menu_set(True)
+                tm = mi.menu_get()
+                createMenuFromMenuView(item.items, tm, None)
+        self._tb.menu_parent_set(self)
+        self._tb.show()
 
     def toggleMenu(self):
         if self._tb:
@@ -67,3 +90,26 @@ class aMSNWindow(elementary.Window, base.aMSNWindow):
     def _on_key_down(self, obj, event):
         pass
 
+def createMenuFromMenuView(items, menu, parent):
+    pass
+    for item in items:
+        if item.type is MenuItemView.CASCADE_MENU:
+            ic = None
+            if item.icon:
+                #TODO
+                pass
+            mi = menu.item_add(parent, item.label, ic)
+            createMenuFromMenuView(item.items, menu, mi)
+        elif item.type is MenuItemView.COMMAND:
+            ic = None
+            if item.icon:
+                #TODO
+                pass
+            cb = None
+            if item.command:
+                def _cb(menu, it):
+                    item.command()
+                cb = _cb
+            menu.item_add(parent, item.label, ic, cb)
+        elif item.type is MenuItemView.SEPARATOR:
+            menu.item_separator_add(parent)

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from constants import *
 import evas
@@ -157,6 +158,9 @@ class PersonalInfoWidget(elementary.Layout):
         self.show()
 
 class aMSNContactListWidget(elementary.Box, base.aMSNContactListWidget):
+    """ The widget is a Box and not a Scroller, because we'll add search entry
+    in it someday…
+    """
     def __init__(self, core, parent):
         elementary.Box.__init__(self, parent)
         self._core = core
