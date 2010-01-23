@@ -140,20 +140,6 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
         self._parent.set_child(self)
         self.show()
 
-
-    def hide(self):
-        elementary.Layout.hide(self)
-        #FIXME: those are not hidden by self._edje.hide()
-        self.password.hide()
-        self.username.hide()
-        try:
-            getattr(self, "signin_b")
-        except AttributeError:
-            pass
-        else:
-            self.signin_b.hide()
-
-
     def setAccounts(self, accountviews):
         #TODO: support more than just 1 account...
         self._account_views = accountviews
