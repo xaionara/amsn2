@@ -20,7 +20,7 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
         edje.frametime_set(1.0 / 30)
 
         elementary.Layout.__init__(self, parent)
-        self.file_set(THEME_FILE, "login_screen")
+        self.file_set(THEME_FILE, "amsn2/login_screen")
 
         self._edje = self.edje_get()
 

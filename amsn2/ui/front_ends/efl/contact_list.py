@@ -62,7 +62,7 @@ class PersonalInfoWidget(elementary.Layout):
         self._parent = parent
         self._personal_info_view = None
         elementary.Layout.__init__(self, self._parent)
-        self.file_set(THEME_FILE, "personal_info")
+        self.file_set(THEME_FILE, "amsn2/personal_info")
 
         self._dp = elementary.Button(self._parent)
         self._dp.label_set("pouet")
@@ -262,7 +262,7 @@ class ContactHolder(elementary.Box):
 
     def add_contact(self, uid):
         new_contact = elementary.Layout(self)
-        new_contact.file_set(THEME_FILE, "contact_item")
+        new_contact.file_set(THEME_FILE, "amsn2/contact_item")
         new_contact.data['uid'] = uid
         new_contact.data['on_click'] = None
         self.contacts_list.append(new_contact)
@@ -295,7 +295,7 @@ class ContactHolder(elementary.Box):
 class GroupItem(elementary.Layout):
     def __init__(self, parent, uid):
         elementary.Layout.__init__(self, parent)
-        self.file_set(THEME_FILE, "group_item")
+        self.file_set(THEME_FILE, "amsn2/group_item")
         self._parent = parent
         self._skin = parent._skin
         self.expanded = True
