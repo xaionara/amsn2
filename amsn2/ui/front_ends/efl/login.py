@@ -10,16 +10,16 @@ from amsn2.core.views import accountview
 
 #TODO: del?
 class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
-    def __init__(self, amsn_core, parent):
+    def __init__(self, amsn_core, win):
         self._core = amsn_core
-        self._evas = parent._evas
-        self._parent = parent
+        self._evas = win._evas
+        self._win = win
         self._account_views = []
         self._ui_manager = self._core._ui_manager
 
         edje.frametime_set(1.0 / 30)
 
-        elementary.Layout.__init__(self, parent)
+        elementary.Layout.__init__(self, win)
         self.file_set(THEME_FILE, "amsn2/login_screen")
 
         self._edje = self.edje_get()
@@ -59,7 +59,7 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
         sc.show()
 
         self.presence = elementary.Hoversel(self)
-        self.presence.hover_parent_set(self._parent)
+        self.presence.hover_parent_set(self._win)
         for key in self._core.p2s:
             name = self._core.p2s[key]
             _, path = self._core._theme_manager.get_statusicon("buddy_%s" % name)
@@ -137,7 +137,7 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
         else:
            self._edje.signal_callback_add("signin", "*", self.__signin_cb)
 
-        self._parent.set_child(self)
+        self._win.set_child(self)
         self.show()
 
     def setAccounts(self, accountviews):

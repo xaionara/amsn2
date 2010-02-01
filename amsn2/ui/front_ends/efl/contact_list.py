@@ -14,27 +14,27 @@ from amsn2.ui import base
 import papyon
 
 class aMSNContactListWindow(elementary.Box, base.aMSNContactListWindow):
-    def __init__(self, core, parent):
+    def __init__(self, core, win):
         self._core = core
-        self._evas = parent._evas
-        self._parent = parent
+        self._evas = win._evas
+        self._win = win
         self._skin = core._skin_manager.skin
-        elementary.Box.__init__(self, parent)
+        elementary.Box.__init__(self, win)
         self.size_hint_weight_set(evas.EVAS_HINT_EXPAND, evas.EVAS_HINT_EXPAND)
         self.size_hint_align_set(evas.EVAS_HINT_FILL, evas.EVAS_HINT_FILL)
         self.homogenous_set(False)
-        self._parent.resize_object_add(self)
+        self._win.child = self
         self.show()
 
         """ Personal Info """
-        self._personal_info = PersonalInfoWidget(self._core, self._parent)
+        self._personal_info = PersonalInfoWidget(self._core, self._win)
         self._personal_info.size_hint_weight_set(evas.EVAS_HINT_EXPAND, 0.0)
         self._personal_info.size_hint_align_set(evas.EVAS_HINT_FILL, 1.0)
         self.pack_start(self._personal_info)
         self._personal_info.show()
 
         """ ContactList Widget """
-        self._clwidget = aMSNContactListWidget(self._core, self._parent)
+        self._clwidget = aMSNContactListWidget(self._core, self._win)
         self._clwidget.size_hint_weight_set(evas.EVAS_HINT_EXPAND,
                                             evas.EVAS_HINT_EXPAND)
         self._clwidget.size_hint_align_set(evas.EVAS_HINT_FILL,
@@ -42,13 +42,13 @@ class aMSNContactListWindow(elementary.Box, base.aMSNContactListWindow):
         self.pack_end(self._clwidget)
         self._clwidget.show()
 
-        self._parent.show()
+        self._win.show()
 
     def setTitle(self, text):
-        self._parent.setTitle(text)
+        self._win.setTitle(text)
 
     def setMenu(self, menu):
-        self._parent.setMenu(menu)
+        self._win.setMenu(menu)
 
     def myInfoUpdated(self, view):
         self._personal_info.myInfoUpdated(view)
@@ -139,7 +139,6 @@ class PersonalInfoWidget(elementary.Layout):
         sc.show()
 
     def myInfoUpdated(self, view):
-        print "myInfoUpdated: view=%s" %(view,)
         self._personal_info_view = view
 
         #TODO
@@ -241,7 +240,6 @@ class ContactHolder(elementary.Box):
                 c.data['on_click'] = None
         c.size_hint_min_set(26, 26)
         c.show()
-        print "c.size_hint_min_get = %s" % (c.size_hint_min_get(),)
 
 
     def groupViewUpdated(self, groupview):
@@ -268,12 +266,10 @@ class ContactHolder(elementary.Box):
         self.contacts_list.append(new_contact)
         self.contacts_dict[uid] = new_contact
         self.pack_end(new_contact)
-        new_contact.size_hint_min_set(26, 26)
         new_contact.size_hint_weight_set(evas.EVAS_HINT_EXPAND,
                                          evas.EVAS_HINT_EXPAND)
         new_contact.size_hint_align_set(evas.EVAS_HINT_FILL,
                                         evas.EVAS_HINT_FILL)
-        print "new_contact.size_hint_min_get() = %s" % (new_contact.size_hint_min_get(),)
 
 
     def remove_contact(self, uid):
@@ -324,20 +320,10 @@ class GroupItem(elementary.Layout):
     # Private methods
     def __expanded_cb(self, edje_obj, signal, source):
         self.expanded = True
-        print "expand"
-        print self.size_hint_min_get()
-        print self.contact_holder.size_hint_min_get()
-        for c in self.contact_holder.contacts_list:
-            print c.size_hint_min_get()
         self.contact_holder.hide()
 
     def __collapsed_cb(self, edje_obj, signal, source):
         self.expanded = False
-        print "collapse"
-        print self.size_hint_min_get()
-        print self.contact_holder.size_hint_min_get()
-        for c in self.contact_holder.contacts_list:
-            print c.size_hint_min_get()
         self.contact_holder.show()
 
 class GroupHolder(elementary.Box):

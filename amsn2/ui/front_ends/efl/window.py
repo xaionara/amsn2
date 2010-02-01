@@ -4,6 +4,7 @@ import evas
 import ecore
 import ecore.evas
 import ecore.x
+import edje
 import elementary
 
 from amsn2.ui import base
@@ -26,22 +27,39 @@ class aMSNWindow(elementary.Window, base.aMSNWindow):
                                       evas.EVAS_HINT_EXPAND)
         self._bg.show()
 
-        self._bx = elementary.Box(self)
-        self.resize_object_add(self._bx)
+        self._ly = elementary.Layout(self)
+        self._ly.file_set(THEME_FILE, "amsn2/win")
+        self.resize_object_add(self._ly)
+        self._ly.size_hint_weight_set(evas.EVAS_HINT_EXPAND,
+                                      evas.EVAS_HINT_EXPAND)
+        self._ly.size_hint_align_set(evas.EVAS_HINT_FILL,
+                                     evas.EVAS_HINT_FILL)
+        self._edje = self._ly.edje_get()
+
+        self._bx = elementary.Box(self._ly)
         self._bx.size_hint_weight_set(evas.EVAS_HINT_EXPAND,
                                       evas.EVAS_HINT_EXPAND)
         self._bx.size_hint_align_set(evas.EVAS_HINT_FILL,
                                      evas.EVAS_HINT_FILL)
+        self._ly.content_set("content", self._bx)
         self._bx.show()
+        self._ly.show()
 
         self._tb = None
 
+    def block(self, block):
+        if block:
+            self._edje.signal_emit("blocker,enable", "")
+        else:
+            self._edje.signal_emit("blocker,disable", "")
 
     def set_child(self, child):
         if self._child:
             self._bx.unpack(self._child)
         self._child = child
         self._bx.pack_end(child)
+
+    child = property(fset=set_child)
 
     @property
     def _evas(self):
@@ -55,7 +73,6 @@ class aMSNWindow(elementary.Window, base.aMSNWindow):
 
     def setMenu(self, mv):
         if self._tb:
-            print "QQQQQQ"
             self._bx.unpack(self._tb)
             self._tb.delete()
         if mv is None:
