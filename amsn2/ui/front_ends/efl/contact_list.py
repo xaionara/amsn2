@@ -44,16 +44,16 @@ class aMSNContactListWindow(elementary.Box, base.aMSNContactListWindow):
 
         self._win.show()
 
-    def setTitle(self, text):
-        self._win.setTitle(text)
+    def set_title(self, text):
+        self._win.set_title(text)
 
-    def setMenu(self, menu):
-        self._win.setMenu(menu)
+    def set_menu(self, menu):
+        self._win.set_menu(menu)
 
-    def myInfoUpdated(self, view):
-        self._personal_info.myInfoUpdated(view)
+    def my_info_updated(self, view):
+        self._personal_info.my_info_updated(view)
 
-    def getContactListWidget(self):
+    def get_contactlist_widget(self):
         return self._clwidget
 
 class PersonalInfoWidget(elementary.Layout):
@@ -138,7 +138,7 @@ class PersonalInfoWidget(elementary.Layout):
         self._cm.show()
         sc.show()
 
-    def myInfoUpdated(self, view):
+    def my_info_updated(self, view):
         self._personal_info_view = view
 
         #TODO
@@ -185,18 +185,18 @@ class aMSNContactListWidget(elementary.Box, base.aMSNContactListWidget):
         self.group_holder.show()
 
 
-    def contactUpdated(self, contact):
+    def contact_updated(self, contact):
         for gi in self.group_holder.group_items_list:
             if contact.uid in gi.contact_holder.contacts_dict:
                 gi.contact_holder.contact_updated(contact)
 
-    def groupUpdated(self, group):
+    def group_updated(self, group):
         if group.uid in self.group_holder.group_items_dict:
             self.group_holder.group_items_dict[group.uid].group_updated(group)
 
 
-    def contactListUpdated(self, clview):
-        self.group_holder.viewUpdated(clview)
+    def contactlist_updated(self, clview):
+        self.group_holder.view_updated(clview)
 
 
 class ContactHolder(elementary.Box):
@@ -242,7 +242,7 @@ class ContactHolder(elementary.Box):
         c.show()
 
 
-    def groupViewUpdated(self, groupview):
+    def group_view_updated(self, groupview):
         contact_items = self.contacts_list
         cuids = [c.uid for g in contact_items]
         self.contact_items = []
@@ -315,7 +315,7 @@ class GroupItem(elementary.Layout):
 
     def group_updated(self, groupview):
         self.edj.part_text_set("group_name", str(groupview.name))
-        self.contact_holder.groupViewUpdated(groupview)
+        self.contact_holder.group_view_updated(groupview)
 
     # Private methods
     def __expanded_cb(self, edje_obj, signal, source):
@@ -356,7 +356,7 @@ class GroupHolder(elementary.Box):
         except KeyError:
             pass
 
-    def viewUpdated(self, clview):
+    def view_updated(self, clview):
         group_items = self.group_items_list
         guids = [g.uid for g in group_items]
         self.group_items = []

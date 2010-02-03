@@ -53,13 +53,13 @@ class aMSNWindow(elementary.Window, base.aMSNWindow):
         else:
             self._edje.signal_emit("blocker,disable", "")
 
-    def set_child(self, child):
+    def child_set(self, child):
         if self._child:
             self._bx.unpack(self._child)
         self._child = child
         self._bx.pack_end(child)
 
-    child = property(fset=set_child)
+    child = property(fset=child_set)
 
     @property
     def _evas(self):
@@ -68,10 +68,10 @@ class aMSNWindow(elementary.Window, base.aMSNWindow):
     def hide(self):
         pass
 
-    def setTitle(self, text):
+    def set_title(self, text):
         self.title_set(text)
 
-    def setMenu(self, mv):
+    def set_menu(self, mv):
         if self._tb:
             self._bx.unpack(self._tb)
             self._tb.delete()
@@ -92,11 +92,11 @@ class aMSNWindow(elementary.Window, base.aMSNWindow):
                 mi = self._tb.item_add(ic, item.label)
                 mi.menu_set(True)
                 tm = mi.menu_get()
-                createMenuFromMenuView(item.items, tm, None)
+                create_menu_from_menuview(item.items, tm, None)
         self._tb.menu_parent_set(self)
         self._tb.show()
 
-    def toggleMenu(self):
+    def toggle_menu(self):
         if self._tb:
             #TODO
             if True:
@@ -107,7 +107,7 @@ class aMSNWindow(elementary.Window, base.aMSNWindow):
     def _on_key_down(self, obj, event):
         pass
 
-def createMenuFromMenuView(items, menu, parent):
+def create_menu_from_menuview(items, menu, parent):
     pass
     for item in items:
         if item.type is MenuItemView.CASCADE_MENU:
@@ -116,7 +116,7 @@ def createMenuFromMenuView(items, menu, parent):
                 #TODO
                 pass
             mi = menu.item_add(parent, item.label, ic)
-            createMenuFromMenuView(item.items, menu, mi)
+            create_menu_from_menuview(item.items, menu, mi)
         elif item.type is MenuItemView.COMMAND:
             ic = None
             if item.icon:

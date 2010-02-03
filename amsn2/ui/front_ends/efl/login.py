@@ -137,10 +137,10 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
         else:
            self._edje.signal_callback_add("signin", "*", self.__signin_cb)
 
-        self._win.set_child(self)
+        self._win.child = self
         self.show()
 
-    def setAccounts(self, accountviews):
+    def set_accounts(self, accountviews):
         #TODO: support more than just 1 account...
         self._account_views = accountviews
         if accountviews:
@@ -189,7 +189,7 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
     def signout(self):
         pass
 
-    def onConnecting(self, progress, message):
+    def on_connecting(self, progress, message):
         self._edje.signal_emit("connecting", "")
         msg1 = ""
         msg2 = ""
@@ -207,16 +207,16 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
 
 
     def __signin_cb(self, edje_obj, signal, source):
-        self._core.signinToAccount(self, self.__get_account())
+        self._core.signin_to_account(self, self.__get_account())
 
     def __signin_button_cb(self, bt):
-        self._core.signinToAccount(self, self.__get_account())
+        self._core.signin_to_account(self, self.__get_account())
 
     def __get_account(self):
         email = elementary.Entry.markup_to_utf8(self.username.entry_get()).strip()
         password = elementary.Entry.markup_to_utf8(self.password.entry_get()).strip()
 
-        accv = self._ui_manager.getAccountViewFromEmail(email)
+        accv = self._ui_manager.get_accountview_from_email(email)
         accv.password = password
 
         accv.presence = self.presence_key
