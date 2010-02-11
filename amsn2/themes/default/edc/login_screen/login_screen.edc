@@ -8,6 +8,7 @@ images {
 #include "logo_anim_images.edc"
 }
 
+#include "language_frame.edc"
 
 group {
   name: "amsn2/login_screen";
@@ -164,7 +165,41 @@ group {
       }                                            \
     }
 
-#include "language_frame.edc"
+    part {
+      name: "language_frame";
+      type: GROUP;
+      source: "amsn2/login_screen.language_frame";
+      description {
+        state: "default" 0.0;
+        visible: 1;
+        rel1 {
+          relative: 0.0 0.0;
+          offset: 0 0;
+        }
+        rel2 {
+          relative: 1.0 0.0;
+          offset: 0 70;
+        }
+      }
+      description {
+        state: "hidden" 0.0;
+        inherit: "default" 0.0;
+        visible: 0;
+        rel1 {
+          relative: 0.0 0.0;
+          offset: 0 0;
+        }
+        rel2 {
+          relative: 1.0 0.0;
+          offset: 0 0;
+        }
+      }
+      description {
+        state: "connecting" 0.0;
+        inherit: "hidden" 0.0;
+      }
+    }
+
 #include "dp_frame.edc"
 #include "fields_frame.edc"
 #include "options_frame.edc"
