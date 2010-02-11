@@ -10,6 +10,8 @@ images {
 
 #include "language_frame.edc"
 
+#include "more_frame.edc"
+
 group {
   name: "amsn2/login_screen";
 
@@ -199,6 +201,38 @@ group {
         inherit: "hidden" 0.0;
       }
     }
+#define CREATE_FRAME2(NAME, GROUPNAME, UNDER)       \
+     part {                                         \
+       name: NAME;                                  \
+       type: GROUP;                                 \
+       source: GROUPNAME;                           \
+       description {                                \
+         state: "default" 0.0;                      \
+         color: 255 255 255 255;                    \
+         fixed: 1 1;                                \
+         align: 0.5 0.0;                            \
+         rel1 {                                     \
+           to: UNDER;                               \
+           relative: 0.0 1.0;                       \
+           offset: 0 0;                             \
+         }                                          \
+       }                                            \
+       description {                                \
+         state: "hidden" 0.0;                       \
+         inherit: "default" 0.0;                    \
+         visible: 0;                                \
+         color: 255 255 255 0;                      \
+         rel1 {                                     \
+           to: UNDER;                               \
+           relative: 0.0 1.0;                       \
+           offset: 0 0;                             \
+         }                                          \
+       }                                            \
+       description {                                \
+         state: "connecting" 0.0;                   \
+         inherit: "hidden" 0.0;                     \
+       }                                            \
+     }
 
 #include "dp_frame.edc"
 #include "fields_frame.edc"
@@ -206,7 +240,10 @@ group {
 #include "signin_frame.edc"
 #include "links_frame.edc"
 #include "update_frame.edc"
-#include "more_frame.edc"
+
+
+     CREATE_FRAME2("more_frame", "amsn2/login_screen.more_frame", "update_frame")
+
 #include "logo_anim_part.edc"
     part {
       name: "connection_status";
