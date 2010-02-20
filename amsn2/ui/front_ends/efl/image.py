@@ -90,7 +90,7 @@ class Image(evas.SmartObject):
     def resize(self, w, h):
         for img in self._imgs:
             img.size_set(w, h)
-            img.fill_set(0,0,w,h)
+            img.fill_set(0, 0, w, h)
 
     def clip_set(self, obj):
         for img in self._imgs:
@@ -102,6 +102,6 @@ class Image(evas.SmartObject):
 
     def move(self, x, y):
         for img in self._imgs:
-            img.move(x ,y)
+            img.move(x, y)
 
 

@@ -129,13 +129,13 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
         self.autologin.show()
 
         if self._edje.part_exists("login_screen.signin"):
-           self.signin_b = elementary.Button(self)
-           self.signin_b.label_set("Sign in")
-           self.signin_b.callback_clicked_add(self.__signin_button_cb)
-           self.signin_b.show()
-           self.content_set("login_screen.signin", self.signin_b)
+            self.signin_b = elementary.Button(self)
+            self.signin_b.label_set("Sign in")
+            self.signin_b.callback_clicked_add(self.__signin_button_cb)
+            self.signin_b.show()
+            self.content_set("login_screen.signin", self.signin_b)
         else:
-           self._edje.signal_callback_add("signin", "*", self.__signin_cb)
+            self._edje.signal_callback_add("signin", "*", self.__signin_cb)
 
         self._win.child = self
         self.show()

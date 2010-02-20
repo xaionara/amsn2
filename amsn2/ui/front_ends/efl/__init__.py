@@ -9,9 +9,9 @@ import traceback
 def load():
     try:
         import efl
-    except ImportError, e:
-        etype, value, tb = sys.exc_info()
-        traceback.print_exception(etype, value, tb.tb_next)
+    except ImportError:
+        etype, value, trace = sys.exc_info()
+        traceback.print_exception(etype, value, trace.tb_next)
         return None
     return efl
 
