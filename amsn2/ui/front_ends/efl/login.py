@@ -1,12 +1,9 @@
-from constants import *
+from constants import THEME_FILE
 import evas
 import edje
-import ecore
-import ecore.x
 import elementary
 
 from amsn2.ui import base
-from amsn2.core.views import accountview
 
 #TODO: del?
 class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
@@ -30,7 +27,7 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
         sc = elementary.Scroller(self)
         sc.content_min_limit(0, 1)
         sc.policy_set(elementary.ELM_SCROLLER_POLICY_OFF,
-                      elementary.ELM_SCROLLER_POLICY_OFF);
+                      elementary.ELM_SCROLLER_POLICY_OFF)
         sc.size_hint_weight_set(1.0, 0.0)
         sc.size_hint_align_set(-1.0, -1.0)
         self.content_set("login_screen.username", sc)
@@ -45,7 +42,7 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
         sc = elementary.Scroller(self)
         sc.content_min_limit(0, 1)
         sc.policy_set(elementary.ELM_SCROLLER_POLICY_OFF,
-                      elementary.ELM_SCROLLER_POLICY_OFF);
+                      elementary.ELM_SCROLLER_POLICY_OFF)
         sc.size_hint_weight_set(1.0, 0.0)
         sc.size_hint_align_set(-1.0, -1.0)
         self.content_set("login_screen.password", sc)

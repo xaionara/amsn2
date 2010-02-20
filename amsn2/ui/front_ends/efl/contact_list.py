@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from constants import *
+from constants import THEME_FILE
 import evas
-import edje
-import ecore
-import ecore.evas
 import elementary
 
 from image import *
 
-from amsn2.core.views import StringView
 from amsn2.ui import base
-import papyon
 
 class aMSNContactListWindow(elementary.Box, base.aMSNContactListWindow):
     def __init__(self, core, win):

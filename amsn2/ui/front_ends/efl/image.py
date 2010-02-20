@@ -1,12 +1,8 @@
 
 import evas
-import ecore
-import ecore.evas
 
 import tempfile
 import os
-
-from amsn2.core.views import imageview
 
 class Image(evas.SmartObject):
     def __init__(self, skin, canvas, view):

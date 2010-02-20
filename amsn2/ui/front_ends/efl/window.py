@@ -1,14 +1,10 @@
 
-from constants import *
+from constants import WIDTH, HEIGHT, THEME_FILE, WM_NAME, WM_CLASS
 import evas
-import ecore
-import ecore.evas
-import ecore.x
-import edje
 import elementary
 
 from amsn2.ui import base
-from amsn2.core.views import MenuView, MenuItemView
+from amsn2.core.views import MenuItemView
 
 class aMSNWindow(elementary.Window, base.aMSNWindow):
     def __init__(self, amsn_core):
