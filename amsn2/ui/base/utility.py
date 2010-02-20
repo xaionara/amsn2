@@ -57,7 +57,7 @@ class aMSNContactInputWindow(object):
         @type groups: tuple
         @param groups: a list of existing groups
         """
-        raise notImplementedError
+        raise NotImplementedError
 
 class aMSNGroupInputWindow(object):
     """
@@ -73,7 +73,7 @@ class aMSNGroupInputWindow(object):
         @type contacts: tuple
         @param contacts: a list of existing contacts
         """
-        raise notImplementedError
+        raise NotImplementedError
 
 class aMSNContactDeleteWindow(object):
     """
@@ -89,7 +89,7 @@ class aMSNContactDeleteWindow(object):
         @type contacts: tuple
         @param contacts: a tuple with all the contacts that can be removed in the AddressBook.
         """
-        raise notImplementedError
+        raise NotImplementedError
 
 class aMSNGroupDeleteWindow(object):
     """
@@ -105,5 +105,5 @@ class aMSNGroupDeleteWindow(object):
         @type groups: tuple
         @param groups: a tuple with all the groups that can be deleted.
         """
-        raise notImplementedError
+        raise NotImplementedError
 
