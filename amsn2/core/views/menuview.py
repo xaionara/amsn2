@@ -89,7 +89,6 @@ class MenuItemView(object):
 
 
 class MenuView(object):
-
     def __init__(self):
         self.items = []
 
