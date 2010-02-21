@@ -1,4 +1,4 @@
-import md5
+import hashlib
 import random
 from amsn2.core.views import ContactView, StringView
 
@@ -7,7 +7,7 @@ class aMSNChatWindow(object):
         It can have many aMSNChatWidgets"""
     def __init__(self, amsn_core):
         self._amsn_core = amsn_core
-        self._uid = md5.new(str(random.random())).hexdigest()
+        self._uid = hashlib.md5(str(random.random())).hexdigest()
         self._main = amsn_core._core._main
         self._main.send("newChatWindow",[self._uid])
 
