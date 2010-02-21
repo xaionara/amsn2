@@ -5,18 +5,18 @@ class aMSNLoginWindow(object):
         self.switch_to_profile(None)
 
     def show(self):
-        self._main.send("showLogin",[]);
-        self._main.addListener("setUsername",self.setUsername)
-        self._main.addListener("setPassword",self.setPassword)
-        self._main.addListener("signin",self.signin)
+        self._main.send("showLogin", []);
+        self._main.addListener("setUsername", self.setUsername)
+        self._main.addListener("setPassword", self.setPassword)
+        self._main.addListener("signin", self.signin)
 
     def hide(self):
         self._main.send("hideLogin",[]);
 
-    def setUsername(self,listU):
+    def setUsername(self, listU):
         self._username = listU.pop()
 
-    def setPassword(self,listP):
+    def setPassword(self, listP):
         self._password = listP.pop()
 
     def switch_to_profile(self, profile):
@@ -25,11 +25,11 @@ class aMSNLoginWindow(object):
             self._username = self.current_profile.username
             self._password = self.current_profile.password
 
-    def signin(self,listE):
+    def signin(self, listE):
         self.current_profile.username = self._username
         self.current_profile.email = self._username
         self.current_profile.password = self._password
         self._amsn_core.signin_to_account(self, self.current_profile)
 
-    def on_connecting(self,mess):
-        self._main.send("onConnecting",[mess])
+    def on_connecting(self, mess):
+        self._main.send("onConnecting", [mess])
