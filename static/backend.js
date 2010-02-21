@@ -293,9 +293,8 @@ function showLogin()
 {
     $("div.login").show("slow");
     $("#signin").click(function() {
-        Send(["setUsername", $("#username").val()]);
-        Send(["setPassword", $("#password").val()]);
-        Send(["signin"]);
+        $.post("/signin", {u:$("#username").val(), p:$("#password").val()},
+               function(data, textStatus){});
     });
 }
 function hideLogin()
@@ -457,14 +456,13 @@ function Listening() {
 // init
 $(document).ready(function()
 {
-    /*
     $(".mainWindow").dialog({
         position:['left','top'],
         height: '100%',
         width: '400px',
         stack: false
     });
-    */
+    showMainWindow();
     showLogin();
     /*
     Listening();
