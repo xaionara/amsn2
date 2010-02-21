@@ -106,7 +106,6 @@ class aMSNCore(object):
 
         self._ui_name = ui_name
         self._ui_manager.load_UI(ui_name)
-        self._loop = self._ui_manager.get_loop()
 
     def switch_to_UI(self, ui_name):
         """

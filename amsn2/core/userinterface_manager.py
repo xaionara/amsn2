@@ -30,7 +30,7 @@ class aMSNUserInterfaceManager(object):
         if self.frontend_exists(ui_name):
             self._ui = self.front_ends[ui_name].load()
 
-            self._loop = self._ui.aMSNMainLoop(self)
+            self._core._loop = self._ui.aMSNMainLoop(self)
             self._main = self._ui.aMSNMainWindow(self._core)
             self._core._main = self._main
             self._skin_manager = self._ui.SkinManager(self._core)
@@ -40,9 +40,6 @@ class aMSNUserInterfaceManager(object):
             logger.error('Unable to load UI %s. Available front ends are: %s'
                          % (ui_name, str(self.list_frontends())))
             self._core.quit()
-
-    def get_loop(self):
-        return self._loop
 
     def load_splash(self):
         self._splash = self._ui.aMSNSplashScreen(self._core, self._main)
