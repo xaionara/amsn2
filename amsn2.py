@@ -25,6 +25,8 @@ if __name__ == '__main__':
                       default=False, help="Show protocol debug")
     parser.add_option("-D", "--debug-amsn2", action="store_true", dest="debug_amsn2",
                       default=False, help="Show amsn2 debug")
+    parser.add_option("-A", "--autologin", action="store_true", dest="auto_login",
+                      default=False, help="Auto login with the credentials given")
     (options, args) = parser.parse_args()
 
     amsn = aMSNCore(options)
