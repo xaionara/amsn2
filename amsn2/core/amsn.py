@@ -18,6 +18,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import sys
+import papyon
+import logging
+
 from amsn2 import protocol
 from amsn2.backend import aMSNBackendManager
 from views import *
@@ -29,9 +33,6 @@ from theme_manager import *
 from personalinfo_manager import *
 from event_manager import *
 from userinterface_manager import *
-import sys
-import papyon
-import logging
 
 # Top-level loggers
 papyon_logger = logging.getLogger("papyon")
