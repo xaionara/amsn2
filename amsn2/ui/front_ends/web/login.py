@@ -7,7 +7,7 @@ class aMSNLoginWindow(object):
         self._main.del_listener("signin", self.signin)
 
     def show(self):
-        self._main.set_listener("signin", self.signin)
+        self._main.add_listener("signin", self.signin)
 
     def hide(self):
         self._main.send("hideLogin");
@@ -32,7 +32,8 @@ class aMSNLoginWindow(object):
         accv.save_password = False
         accv.autologin = False
 
-        print "signing in"
+        logging.error("signing in")
+        self._amsn_core.quit()
         self._amsn_core.signin_to_account(self, accv)
 
     def on_connecting(self, progress, msg):

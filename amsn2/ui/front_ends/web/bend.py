@@ -2,6 +2,8 @@ import cherrypy
 import thread
 import os
 import logging
+import threading
+import Queue
 
 class Backend(object):
     """
@@ -10,39 +12,49 @@ class Backend(object):
     """
     def __init__(self):
         self.listeners = {}
-        self.out_stack = []
+        self._outq = Queue.Queue(0)
+        self._inq = Queue.Queue(0)
 
-        class Root(object):
-            def __init__(self, backend):
-                self._backend = backend
-            @cherrypy.expose
-            def index(self):
-                raise cherrypy.HTTPRedirect("static/amsn2.html")
 
-            @cherrypy.expose
-            def signin(self, u=None, p=None):
-                self._backend.emit_event("signin", u, p)
-                print self._backend.listeners
+        def worker(inq, outq):
+            class Root(object):
+                def __init__(self, inq, outq):
+                    self._inq = inq
+                    self._outq = outq
 
-            @cherrypy.expose
-            def out(self):
-                l = self._backend.out_stack
-                self._backend.out_stack = []
-                return l
+                @cherrypy.expose
+                def index(self):
+                    raise cherrypy.HTTPRedirect("static/amsn2.html")
 
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        cherrypy.config.update({'log.error_file': 'amsn2-web-error.log',
-                               'log.access_file': 'amsn2-web-access.log',
-                               'log.screen': False})
+                @cherrypy.expose
+                def signin(self, u=None, p=None):
+                    self._inq.put_nowait(["signin", u, p])
 
-        conf = {'/static': {'tools.staticdir.on': True,
-                'tools.staticdir.dir': os.path.join(current_dir, 'static')},
-               }
+                @cherrypy.expose
+                def out(self):
+                    l = []
+                    while True:
+                        try:
+                            l.append(self._outq.get_nowait())
+                        except Queue.Empty:
+                            break;
+                    logging.error("OOOOOO")
+                    return l
 
-        self._web = thread.start_new_thread(
-            cherrypy.quickstart(Root(self), '/', config=conf))
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            cherrypy.config.update({'log.error_file': 'amsn2-web-error.log',
+                                   'log.access_file': 'amsn2-web-access.log',
+                                   'log.screen': False})
 
-    def set_listener(self, event, listener):
+            conf = {'/static': {'tools.staticdir.on': True,
+                    'tools.staticdir.dir': os.path.join(current_dir, 'static')},
+                   }
+            cherrypy.quickstart(Root(inq, outq), '/', config=conf)
+        t = threading.Thread(target=worker, args=[self._inq, self._outq])
+        t.daemon = True
+        t.start()
+
+    def add_listener(self, event, listener):
         if not self.listeners.has_key(event):
             self.listeners[event] = []
         self.listeners[event].append(listener)
@@ -51,28 +63,14 @@ class Backend(object):
         #TODO
         pass
 
-    def checkEvent(self):
-        # This function is called to check for events in the file
-        try:
-            # one event per line, divided by columns divided by tab
-            # the first column is the event, the next columns are the arguments
-            eventDesc = self._in.readline()
-            while len(eventDesc) > 0:
-                try:
-                    eventDesc = eventDesc.strip().split("\t")
-                    eventName = eventDesc.pop(0)
-                    realValues = []
-                    for value in eventDesc:
-                        realValues.append(str(value).decode('string_escape'))
-                    if eventName is not "":
-                        self.event(eventName, realValues)
-                except:
-                     # event problem.. probably a badly encoded string
-                     break
-                eventDesc = self._in.readline()
-        except:
-            # problem with lines (maybe empty file)
-            pass
+    def check_event(self):
+        # This function is called to check for events
+        while True:
+            try:
+                e = self._inq.get_nowait()
+                self.emit_event(e[0], e[1:])
+            except Queue.Empty:
+                break;
         # Return true to continue checking events
         return True
 
@@ -91,5 +89,5 @@ class Backend(object):
         for value in args:
             call += "'" + str(value).encode('string_escape') + "',"
         call = call.rstrip(",") + "]);"
-        self.out_stack.append(call)
+        self._outq.put_nowait(call)
         print call

@@ -466,5 +466,5 @@ $(document).ready(function()
     });
     showMainWindow();
     showLogin();
-    Listening();
+    //Listening();
 });
