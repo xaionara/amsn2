@@ -16,7 +16,8 @@ from amsn2.core import aMSNCore
 
 
 urls = (
-  '/signin', 'signin'
+  '/signin', 'signin',
+  '/out', 'out'
 )
 
 
@@ -36,8 +37,8 @@ class signin:
         options.account = u
         options.password = p
         options.auto_login = True
-        aMSNCore(options)
-
+        amsn = aMSNCore(options)
+        amsn.run()
 
 
 

@@ -414,6 +414,7 @@ function nudgeChatWidget(uidL)
 }
 
 // Comunication functions
+/*
 var ReqStack = [];
 function Send(msg)
 {
@@ -440,10 +441,11 @@ function Sending()
         }
     } catch(e) {}
 }
+*/
 function Listening() {
     try {
         var xhr;
-        (xhr=$.get("amsn2.php?out", null, function (data, textStatus) {
+        (xhr=$.get("/out", null, function (data, textStatus) {
             console.log(data)
             eval(data);
         },'text')).onreadystatechange = function() {
@@ -464,8 +466,5 @@ $(document).ready(function()
     });
     showMainWindow();
     showLogin();
-    /*
     Listening();
-    Sending();
-    */
 });

@@ -1,4 +1,3 @@
-
 from amsn2.ui import base
 import gobject
 

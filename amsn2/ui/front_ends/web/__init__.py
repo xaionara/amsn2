@@ -1,17 +1,18 @@
+import traceback
+import sys
 
 from amsn2.core import aMSNUserInterfaceManager
-import sys
 
 # Here we load the actual front end.
 # We need to import the front end module and return it
 # so the guimanager can access its classes
 def load():
     try:
-        import web
+        import cherrypy
         import amsn2.ui.front_ends.web._web
     except ImportError:
-        etype, value, traceback = sys.exc_info()
-        traceback.print_exception(etype, value, traceback.tb_next)
+        etype, value, trace = sys.exc_info()
+        traceback.print_exception(etype, value, trace.tb_next)
         return None
     return amsn2.ui.front_ends.web._web
 
