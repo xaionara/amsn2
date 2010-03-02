@@ -20,6 +20,7 @@ def load():
 # dependency then register it to the guimanager
 try:
     import imp
+    imp.find_module("cherrypy")
     aMSNUserInterfaceManager.register_frontend("web", sys.modules[__name__])
 
 except ImportError:
