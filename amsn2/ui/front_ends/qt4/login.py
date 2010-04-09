@@ -143,7 +143,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         accv.save_password = self.ui.checkRememberPass.isChecked()
         accv.autologin = self.ui.checkSignInAuto.isChecked()
 
-        self._amsn_core.signin_to_accoun_aa(self, accv)
+        self._amsn_core.signin_to_account(self, accv)
 
     def signout(self):
         pass
