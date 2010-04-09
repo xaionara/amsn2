@@ -186,5 +186,4 @@ class defaultaccountbackend(basebackend.basebackend):
         return os.path.join(dir, shac.encode("hex")+".img")
 
     def _get_dir(self, email):
-	email = str(email)
         return email.lower().strip().replace("@","_at_")
