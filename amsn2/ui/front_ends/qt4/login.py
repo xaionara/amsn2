@@ -130,7 +130,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         self.ui.checkSignInAuto.setChecked(accv.autologin)
 
     def __login_clicked(self):
-        email = self.ui.comboAccount.currentText()
+        email = str(self.ui.comboAccount.currentText())
         accv = self._ui_manager.get_accountview_from_email(email)
 
         if accv is None:
