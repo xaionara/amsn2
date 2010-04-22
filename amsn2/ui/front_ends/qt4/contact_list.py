@@ -92,7 +92,7 @@ class itemDelegate(QStyledItemDelegate):
         doc = QTextDocument()
         doc.setHtml(options.text)
         options.text = ""
-        options.widget.style().drawControl(QStyle.CE_ItemViewItem, options, painter, options.widget)
+        QApplication.style().drawControl(QStyle.CE_ItemViewItem, options, painter, options.widget)
         painter.translate(options.rect.left() + self.sizeDp(index) + 3, options.rect.top()) #paint text right after the dp + 3pixels
         rect = QRectF(0, 0, options.rect.width(), options.rect.height())
         doc.drawContents(painter, rect)
