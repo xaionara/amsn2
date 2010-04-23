@@ -262,7 +262,7 @@ p, li { white-space: pre-wrap; }
       <bool>false</bool>
      </property>
      <property name="styleSheet">
-      <string>QTreeView {
+      <string notr="true">QTreeView {
     show-decoration-selected: 1;
     background-color: white;
 	border: none;
@@ -314,14 +314,14 @@ QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings {
     background: white;
     border-image: none;
-    image: url(amsn2/gui/front_ends/qt4/arrow-right.png);
+    image: url(amsn2/ui/front_ends/qt4/arrow-right.png);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings  {
     background: white;
     border-image: none;
-    image: url(amsn2/gui/front_ends/qt4/arrow-down.png);
+    image: url(amsn2/ui/front_ends/qt4/arrow-down.png);
 }</string>
      </property>
      <property name="horizontalScrollBarPolicy">
