@@ -82,11 +82,11 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
     def setTestStyle(self):
         styleData = QFile()
         if self.ui.styleDesktop.isChecked() == True:
-            styleData.setFileName("amsn2/gui/front_ends/qt4/style0.qss")
+            styleData.setFileName("amsn2/ui/front_ends/qt4/style0.qss")
         elif self.ui.styleWLM.isChecked() == True:
-            styleData.setFileName("amsn2/gui/front_ends/qt4/style1.qss")
+            styleData.setFileName("amsn2/ui/front_ends/qt4/style1.qss")
         elif self.ui.styleRounded.isChecked() == True:
-            styleData.setFileName("amsn2/gui/front_ends/qt4/style2.qss")
+            styleData.setFileName("amsn2/ui/front_ends/qt4/style2.qss")
         if styleData.open(QIODevice.ReadOnly|QIODevice.Text):
             styleReader = QTextStream(styleData)
             self.setStyleSheet(styleReader.readAll())
