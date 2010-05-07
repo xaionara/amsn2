@@ -37,19 +37,6 @@ except ImportError, e:
     print "WARNING: To use the QT4 you need to run the generateFiles.sh, check the README"
     raise e
 
-class InputWidget(QTextEdit):
-    def __init__(self, parent=None):
-        QTextEdit.__init__(self, parent)
-        self.setTextInteractionFlags(Qt.TextEditorInteraction)
-
-    def keyPressEvent(self, event):
-        print "key pressed:" + str(event.key())
-        if event.key() == Qt.Key_Enter or event.key() == Qt.Key_Return:
-            print "handle!!"
-            self.emit(SIGNAL("enterKeyTriggered()"))
-        else:
-            QTextEdit.keyPressEvent(self, event)
-
 class aMSNChatWindow(QTabWidget, base.aMSNChatWindow):
     def __init__(self, amsn_core, parent=None):
         QTabWidget.__init__(self, parent)
@@ -59,7 +46,6 @@ class aMSNChatWindow(QTabWidget, base.aMSNChatWindow):
     def add_chat_widget(self, chat_widget):
         self.addTab(chat_widget, "test")
 
-
 class aMSNChatWidget(QWidget, base.aMSNChatWidget):
     def __init__(self, amsn_conversation, parent, contacts_uid):
         QWidget.__init__(self, parent)
@@ -67,7 +53,8 @@ class aMSNChatWidget(QWidget, base.aMSNChatWidget):
         self._amsn_conversation = amsn_conversation
         self.ui = Ui_ChatWindow()
         self.ui.setupUi(self)
-        self.ui.inputWidget = InputWidget(self)
+        self.ui.inputWidget.setTextInteractionFlags(Qt.TextEditorInteraction)
+        self.ui.inputWidget.installEventFilter(self)
         self.ui.inputLayout.addWidget(self.ui.inputWidget)
         self._statusBar = QStatusBar(self)
         self.layout().addWidget(self._statusBar)
@@ -88,6 +75,14 @@ class aMSNChatWidget(QWidget, base.aMSNChatWidget):
 
         #TODO: remove this when papyon is "fixed"...
         sys.setdefaultencoding("utf8")
+
+    def eventFilter(self, obj, ev):
+       #We can filter event msgs by obj
+       if ev.type() == QEvent.KeyPress:
+          if ev.key() == Qt.Key_Return or ev.key() == Qt.Key_Enter:
+            self.ui.inputWidget.emit(SIGNAL("enterKeyTriggered()"))
+            return True
+       return False
 
     def processInput(self):
         """ Here we process what is inside the widget... so showing emoticon
@@ -212,5 +207,4 @@ class aMSNChatWidget(QWidget, base.aMSNChatWidget):
     def on_nudge_received(self, sender):
         self.ui.textEdit.append(unicode("<b>"+QString.fromUtf8(sender.to_HTML_string())+" "+self.tr("sent you a nudge!")+("</b>")))
         pass
-
 
