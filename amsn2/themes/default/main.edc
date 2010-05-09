@@ -14,6 +14,10 @@ styles {
 #include "edc/styles.edc"
 }
 
+externals {
+  external: "elm";
+}
+
 collections {
 #include "edc/login_screen/login_screen.edc"
 #include "edc/contact_list/contact_list.edc"
