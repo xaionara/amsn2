@@ -94,7 +94,7 @@ group {
         max: 70 70;
         align: 0.0 0.5;
         image {
-          normal: "dp_border.png";
+          normal: "contact_list/dp_border.png";
           border: 11 11 11 11;
         }
       }
