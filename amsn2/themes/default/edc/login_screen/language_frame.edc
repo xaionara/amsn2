@@ -1,5 +1,5 @@
 group {
-  name: "amsn2/login_screen.language_frame";
+  name: "amsn2/login.language_frame";
   parts {
     part {
       name: "language_button";
