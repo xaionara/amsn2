@@ -40,19 +40,12 @@ class aMSNContactListWindow(base.aMSNContactListWindow):
         self.__create_controls()
 
     def __create_controls(self):
-        # TODO Create and set text/values to controls.
         #status list
-        self.status_values = {}
-        self.status_dict = {}
-        status_n = 0
         for key in self._amsn_core.p2s:
             name = self._amsn_core.p2s[key]
-            if (name == 'offline'): continue
-            self.status_values[name] = status_n
-            self.status_dict[str.capitalize(name)] = name
-            status_n = status_n +1
-        # If we add a combobox like the gtk ui, uncomment this.
-        #self.ui.comboStatus.addItem(str.capitalize(name))
+            _, path = self._theme_manager.get_statusicon("buddy_%s" % name)
+            if (name == self._amsn_core.p2s['FLN']): continue
+            self._clwidget.ui.status.addItem(QIcon(path), str.capitalize(name), key)
 
     def show(self):
         self._clwidget.show()
@@ -68,13 +61,19 @@ class aMSNContactListWindow(base.aMSNContactListWindow):
 
     def my_info_updated(self, view):
         # TODO image, ...
-        self._myview = view
+        imview = view.dp
+        if len(imview.imgs) > 0:
+            pixbuf = QPixmap(imview.imgs[0][1])
+            self._clwidget.ui.pixUser.setPixmap(pixbuf)
         nk = view.nick
-        self._clwidget.ui.nickName.setText(str(nk))
-        message = str(view.psm)+' '+str(view.current_media)
-        self._clwidget.ui.statusMessage.setText('<i>'+message+'</i>')
-        # TODO Add a combobox like the gtk ui?
-        #self.ui.statusCombo.currentIndex(self.status_values[view.presence])
+        self._clwidget.ui.nickName.setHtml(nk.to_HTML_string())
+        message = view.psm.to_HTML_string()
+        if len(view.current_media.to_HTML_string()) > 0:
+            message += ' ' + view.current_media.to_HTML_string()
+        self._clwidget.ui.statusMessage.setHtml('<i>'+message+'</i>')
+        for key in self._amsn_core.p2s:
+            if self._amsn_core.p2s[key] == view.presence:
+                self._clwidget.ui.status.setCurrentIndex(self._clwidget.ui.status.findData(key))
 
     def get_contactlist_widget(self):
         return self._clwidget
@@ -120,10 +119,31 @@ class itemDelegate(QStyledItemDelegate):
         qv = QPixmap(model.data(model.index(index.row(), 0, index.parent()), Qt.DecorationRole))
         return qv.width()
 
+class GlobalFilter(QObject):
+    def __init__(self,parent =None):
+        QObject.__init__(self,parent)
+
+    def eventFilter(self, obj, e):
+        if obj.objectName() == "nickName":
+          if e.type() == QEvent.FocusOut:
+            obj.emit(SIGNAL("nickChange()"))
+            return False
+          if e.type() == QEvent.KeyPress and (e.key() == Qt.Key_Enter or e.key() == Qt.Key_Return):
+            return True
+
+        if obj.objectName() == "statusMessage":
+          if e.type() == QEvent.FocusOut:
+            obj.emit(SIGNAL("psmChange()"))
+            return False
+          if e.type() == QEvent.KeyPress and (e.key() == Qt.Key_Enter or e.key() == Qt.Key_Return):
+            return True
+        return False
+
 class aMSNContactListWidget(StyledWidget, base.aMSNContactListWidget):
     def __init__(self, amsn_core, parent):
         StyledWidget.__init__(self, parent._parent)
         self._amsn_core = amsn_core
+        self._myview = parent._myview
         self.ui = Ui_ContactList()
         self.ui.setupUi(self)
         delegate = itemDelegate(self)
@@ -148,8 +168,14 @@ class aMSNContactListWidget(StyledWidget, base.aMSNContactListWidget):
         (self.ui.cList.header()).setSectionHidden(3, True) #hide --> (contact/group view object)
 
         self.connect(self.ui.searchLine, SIGNAL('textChanged(QString)'), self._proxyModel, SLOT('setFilterFixedString(QString)'))
-        QObject.connect(self.ui.nickName, SIGNAL('textChanged(QString)'), self.__slotChangeNick)
-        self.connect(self.ui.cList, SIGNAL('doubleClicked(QModelIndex)'), self.__slotContactCallback)
+        self.connect(self.ui.nickName, SIGNAL('nickChange()'), self.__nickChange)
+        self.connect(self.ui.statusMessage, SIGNAL('psmChange()'), self.__psmChange)
+        self.connect(self.ui.status, SIGNAL('currentIndexChanged(int)'), self.__statusChange)
+        self.connect(self.ui.cList, SIGNAL('doubleClicked(QModelIndex)'), self.__clDoubleClick)
+
+        self.ui.nickName.installEventFilter(GlobalFilter(self.ui.nickName))
+        self.ui.statusMessage.installEventFilter(GlobalFilter(self.ui.statusMessage))
+
 
     def show(self):
         self._mainWindow.fadeIn(self)
@@ -157,10 +183,20 @@ class aMSNContactListWidget(StyledWidget, base.aMSNContactListWidget):
     def hide(self):
         pass
 
-    def __slotChangeNick(self):
+    def __nickChange(self):
         sv = StringView()
-        sv.appendText(str(self.ui.nickName.text()))
-        self._amsn_core._profile.client.changeNick(sv)
+        sv.append_text(str(self.ui.nickName.toPlainText()))
+        self._myview.nick = sv
+
+    def __psmChange(self):
+        sv = StringView()
+        sv.append_text(str(self.ui.statusMessage.toPlainText()))
+        self._myview.psm = sv
+
+    def __statusChange(self, i):
+        for key in self._amsn_core.p2s:
+            if key == str(self.ui.status.itemData(i).toString()):
+                self._myview.presence = self._amsn_core.p2s[key]
 
     def __search_by_id(self, id):
         parent = self._model.item(0)
@@ -256,10 +292,10 @@ class aMSNContactListWidget(StyledWidget, base.aMSNContactListWidget):
     def cget(self, option, value):
         pass
 
-    def size_request_set(self, w,h):
+    def size_request_set(self, w, h):
         pass
 
-    def __slotContactCallback(self, index):
+    def __clDoubleClick(self, index):
 
         model = index.model()
         qvart = model.data(model.index(index.row(), 2, index.parent()))

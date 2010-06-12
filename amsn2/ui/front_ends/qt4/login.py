@@ -66,18 +66,11 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         self.setTestStyle()
 
         # status list
-        self.status_values = {}
-        self.status_dict = {}
-        status_n = 0
         for key in self._amsn_core.p2s:
             name = self._amsn_core.p2s[key]
             _, path = self._theme_manager.get_statusicon("buddy_%s" % name)
-            if (name == self._amsn_core.Presence.OFFLINE): continue
-            self.status_values[key] = status_n
-            self.status_dict[str.capitalize(name)] = key
-            status_n = status_n +1
-            icon = QIcon(path)
-            self.ui.comboStatus.addItem(icon, str.capitalize(name))
+            if (name == self._amsn_core.p2s['FLN']): continue
+            self.ui.comboStatus.addItem(QIcon(path), str.capitalize(name), key)
 
     def setTestStyle(self):
         styleData = QFile()
@@ -137,7 +130,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
             accv = AccountView(self._amsn_core, str(email))
 
         accv.password = self.ui.linePassword.text().toLatin1().data()
-        accv.presence = self.status_dict[str(self.ui.comboStatus.currentText())]
+        accv.presence = str(self.ui.comboStatus.itemData(self.ui.comboStatus.currentIndex()).toString())
 
         accv.save = self.ui.checkRememberMe.isChecked()
         accv.save_password = self.ui.checkRememberPass.isChecked()
