@@ -50,7 +50,8 @@ class aMSNContactListManager:
             papyon_contact.msn_object):
             self._core._account.client.msn_object_store.request(papyon_contact.msn_object,
                                                                 (self.on_DP_downloaded,
-                                                                 papyon_contact.id))
+                                                                 papyon_contact.id),
+                                                                 peer = papyon_contact)
 
     def on_DP_downloaded(self, msn_object, uid):
         #1st/ update the aMSNContact object
