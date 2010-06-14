@@ -18,20 +18,14 @@ class aMSNPersonalInfoManager:
         # set nickname at login
         # could be overriden by the one set in the saved account
         # TODO: add setting display picture
-        strv = StringView()
         nick = str(amsn_account.view.nick)
-        if nick and nick != amsn_account.view.email:
-            strv.append_text(nick)
-        else:
-            strv.append_text(self._papyon_profile.display_name)
-        self._personalinfoview.nick = strv
+        if !nick or nick == amsn_account.view.email:
+            nick = self._papyon_profile.display_name
+        self._personalinfoview.nick = nick
 
         # TODO: The psm doesn't seem to get fetched from server. Papyon issue?
-        strv = StringView()
         psm = str(amsn_account.view.psm)
-        if psm:
-            strv.append_text(psm)
-        self._personalinfoview.psm = strv
+        self._personalinfoview.psm = psm
 
         # set login presence, from this moment the client appears to the others
         self._personalinfoview.presence = self._core.p2s[amsn_account.view.presence]
@@ -49,8 +43,8 @@ class aMSNPersonalInfoManager:
         # TODO: manage custom presence
         for key in self._core.p2s:
             if self._core.p2s[key] == new_presence:
-                break
-        self._papyon_profile.presence = key
+                self._papyon_profile.presence = key
+                return
 
     def _on_DP_change_request(self):
         self._core._ui_manager.load_DP_chooser_window()
