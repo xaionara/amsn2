@@ -19,7 +19,7 @@ class aMSNPersonalInfoManager:
         # could be overriden by the one set in the saved account
         # TODO: add setting display picture
         nick = str(amsn_account.view.nick)
-        if !nick or nick == amsn_account.view.email:
+        if not nick or nick == amsn_account.view.email:
             nick = self._papyon_profile.display_name
         self._personalinfoview.nick = nick
 
