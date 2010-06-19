@@ -40,6 +40,9 @@ except ImportError, e:
 class aMSNChatWindow(QTabWidget, base.aMSNChatWindow):
     def __init__(self, amsn_core, parent=None):
         QTabWidget.__init__(self, parent)
+        self.setDocumentMode(True)
+        self.setTabsClosable(True)
+        self.setMovable(True)
 
         self._core = amsn_core
 
