@@ -547,11 +547,14 @@ QComboBox::down-arrow {
        <property name="cursor" stdset="0">
         <cursorShape>ArrowCursor</cursorShape>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">QTreeView {
+        <string notr="true">QTreeView, QTreeView::focus {
     /*show-decoration-selected: 1;*/
     background: transparent;
     background-color: transparent;
@@ -606,6 +609,9 @@ QTreeView::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(amsn2/ui/front_ends/qt4/arrow-down.png);
 }</string>
+       </property>
+       <property name="lineWidth">
+        <number>0</number>
        </property>
        <property name="horizontalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOff</enum>
