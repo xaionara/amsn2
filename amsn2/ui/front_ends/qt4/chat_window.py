@@ -46,6 +46,7 @@ class aMSNChatWindow(QTabWidget, base.aMSNChatWindow):
     def add_chat_widget(self, chat_widget):
         self.addTab(chat_widget, "test")
 
+
 class aMSNChatWidget(QWidget, base.aMSNChatWidget):
     def __init__(self, amsn_conversation, parent, contacts_uid):
         QWidget.__init__(self, parent)
@@ -53,57 +54,53 @@ class aMSNChatWidget(QWidget, base.aMSNChatWidget):
         self._amsn_conversation = amsn_conversation
         self.ui = Ui_ChatWindow()
         self.ui.setupUi(self)
-        #self.ui.inputWidget.setTextInteractionFlags(Qt.TextEditorInteraction)
         self._statusBar = QStatusBar(self)
         self.layout().addWidget(self._statusBar)
         self.ui.inputWidget.installEventFilter(self)
-        self.ui.splitter.setStretchFactor(0, 95)
-        self.ui.textLayout.setStretchFactor(0, 95)
-        self.ui.splitter_2.setStretchFactor(0, 95)
+        self.cursor = QTextCursor(self.ui.inputWidget.document())
+        #self.ui.splitter.setStretchFactor(0, 95)
+        #self.ui.splitter_2.setStretchFactor(0, 95)
+        #self.ui.splitter_3.setStretchFactor(0, 95)
         self.last_sender = ''
         self.nickstyle = "color:#555555; margin-left:2px"
         self.msgstyle = "margin-left:15px"
         self.infostyle = "margin-left:2px; font-style:italic; color:#6d6d6d"
         self.loadEmoticonList()
 
-        QObject.connect(self.ui.inputWidget, SIGNAL("textChanged()"), self.processInput)
-        QObject.connect(self.ui.inputWidget, SIGNAL("enterKeyTriggered()"), self.__sendMessage)
         QObject.connect(self.ui.actionInsert_Emoticon, SIGNAL("triggered()"), self.showEmoticonList)
-        self.enterShortcut = QShortcut(QKeySequence("Enter"), self.ui.inputWidget)
-        self.nudgeShortcut = QShortcut(QKeySequence("Ctrl+G"), self)
-        QObject.connect(self.enterShortcut, SIGNAL("activated()"), self.__sendMessage)
-        QObject.connect(self.nudgeShortcut, SIGNAL("activated()"), self.__sendNudge)
-        QObject.connect(self.ui.actionNudge, SIGNAL("triggered()"), self.__sendNudge)
 
         #TODO: remove this when papyon is "fixed"...
         sys.setdefaultencoding("utf8")
 
     def eventFilter(self, obj, ev):
-       #We can filter event msgs by obj
-       if ev.type() == QEvent.KeyPress:
-          if ev.key() == Qt.Key_Return or ev.key() == Qt.Key_Enter:
-            self.ui.inputWidget.emit(SIGNAL("enterKeyTriggered()"))
-            return True
+       #We can filter event msgs by obj/type
+       if obj.objectName() == "inputWidget":
+           if ev.type() == QEvent.KeyPress:
+               if ev.key() == Qt.Key_Return or ev.key() == Qt.Key_Enter:
+                   self.__sendMessage()
+                   return True
+               else:
+                   self.processInput()
+                   return False
+           else:
+               return False
+           
        return False
+
 
     def processInput(self):
         """ Here we process what is inside the widget... so showing emoticon
         and similar stuff"""
-        
-        QObject.disconnect(self.ui.inputWidget, SIGNAL("textChanged()"), self.processInput)
-
-        self.text = QString(self.ui.inputWidget.toHtml())
-
+        position = self.cursor.position()
+        #We don't want the entire text but only current word
+        self.cursor.select(QTextCursor.WordUnderCursor)
+        text = self.cursor.selectedText()
+        self.cursor.clearSelection()
         for emoticon in self.emoticonList:
-            if self.text.contains(emoticon) == True:
-                print emoticon
-                self.text.replace(emoticon, "<img src=\"throbber.gif\" />")
-
-        self.ui.inputWidget.setHtml(self.text)
-        self.ui.inputWidget.moveCursor(QTextCursor.End)
+            if text.contains(emoticon) == True:
+                text.replace(emoticon, "<img src=\"throbber.gif\" />")
+        self.cursor.setPosition(position)
         self.__typingNotification()
-
-        QObject.connect(self.ui.inputWidget, SIGNAL("textChanged()"), self.processInput)
 
     def loadEmoticonList(self):
         self.emoticonList = QStringList()

@@ -186,14 +186,15 @@ class aMSNContactListWidget(StyledWidget, base.aMSNContactListWidget):
     def __nickChange(self):
         sv = StringView()
         sv.append_text(str(self.ui.nickName.toPlainText()))
-        self._myview.nick = sv
+        self._myview.nick = str(sv)
 
     def __psmChange(self):
         sv = StringView()
         sv.append_text(str(self.ui.statusMessage.toPlainText()))
-        self._myview.psm = sv
+        self._myview.psm = str(sv)
 
     def __statusChange(self, i):
+        if self.ui.status.count()+1 != len(self._amsn_core.p2s): return
         for key in self._amsn_core.p2s:
             if key == str(self.ui.status.itemData(i).toString()):
                 self._myview.presence = self._amsn_core.p2s[key]
