@@ -55,12 +55,15 @@ class aMSNChatWidget(QWidget, base.aMSNChatWidget):
         self.ui = Ui_ChatWindow()
         self.ui.setupUi(self)
         self._statusBar = QStatusBar(self)
+        self._statusBar.setFixedHeight(14)
+        self._statusBar.setSizeGripEnabled(False)
         self.layout().addWidget(self._statusBar)
         self.ui.inputWidget.installEventFilter(self)
         self.cursor = QTextCursor(self.ui.inputWidget.document())
-        #self.ui.splitter.setStretchFactor(0, 95)
-        #self.ui.splitter_2.setStretchFactor(0, 95)
-        #self.ui.splitter_3.setStretchFactor(0, 95)
+        self.ui.splitter.setStretchFactor(0, 95)
+        self.ui.splitter_2.setStretchFactor(0, 95)
+        self.ui.splitter_3.setStretchFactor(0, 95)
+        self.ui.splitter_3.setStretchFactor(1, 1)
         self.last_sender = ''
         self.nickstyle = "color:#555555; margin-left:2px"
         self.msgstyle = "margin-left:15px"
