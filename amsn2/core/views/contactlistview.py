@@ -15,7 +15,11 @@ class GroupView:
         self.icon = ImageView() # TODO: expanded/collapsed icon
         self.name = StringView() # TODO: default color from skin/settings
         self.name.append_text(name) #TODO: parse for smileys
-        active = 0 #TODO
+        active = 0
+        for cid in contact_ids:
+            contact = core._contactlist_manager.get_contact(cid)
+            if str(contact.status) != core.p2s['FLN']:
+                active = active + 1
         total = len(self.contact_ids)
         self.name.append_text("(" + str(active) + "/" + str(total) + ")")
 

@@ -29,8 +29,11 @@ class aMSNContactListManager:
         #2nd/ update the ContactView
         cv = ContactView(self._core, c)
         self._em.emit(self._em.events.CONTACTVIEW_UPDATED, cv)
-
-        #TODO: update the group view
+        #3rd/ update the GroupView
+        for gid in c.groups:
+            group = self.get_group(gid)
+            gv = GroupView(self._core, gid, group.name, group.contacts)
+            self._em.emit(self._em.events.GROUPVIEW_UPDATED, gv)
 
     def on_contact_DP_changed(self, papyon_contact):
         """ Called when a contact changes its Display Picture. """
