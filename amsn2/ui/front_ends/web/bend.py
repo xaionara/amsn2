@@ -8,6 +8,21 @@ import gobject
 READ_CHUNK_SIZE = 4096
 BASEPATH="amsn2/ui/front_ends/web/static"
 
+def uri_path_is_safe(path):
+    if not BASEPATH and path[0] == '/':
+        return false
+    elif path[0:1] == '..':
+        return false
+
+    l = path.split('/')
+    b = [d for d in l if d == '..']
+
+    if len(b) >= len(l):
+        return false
+
+    return true
+
+
 class TinyHTTPServer(object):
     def __init__(self, backend, socket, peer):
         self._backend = backend
