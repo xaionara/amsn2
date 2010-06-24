@@ -55,11 +55,7 @@
          </property>
          <widget class="QTextEdit" name="textEdit">
           <property name="styleSheet">
-           <string notr="true">#textEdit {
-  border: 1px solid black;
-  border-radius: 5px;
-  background-color: transparent;
-}</string>
+           <string notr="true"/>
           </property>
           <property name="undoRedoEnabled">
            <bool>false</bool>
