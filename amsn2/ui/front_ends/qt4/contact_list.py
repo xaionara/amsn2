@@ -38,6 +38,9 @@ class aMSNContactListWindow(base.aMSNContactListWindow):
         self._clwidget = aMSNContactListWidget(amsn_core, self)
         self._clwidget.show()
         self.__create_controls()
+        self._clwidget.ui.pixUser.setIconSize(QSize(96,96))
+        self._clwidget.ui.pixUser.setIcon(QIcon("amsn2/ui/front_ends/qt4/msn-userimage2.png"))
+        QObject.connect(self._clwidget.ui.pixUser, SIGNAL("clicked()"),self._myview.changeDP)
 
     def __create_controls(self):
         #status list
@@ -64,7 +67,8 @@ class aMSNContactListWindow(base.aMSNContactListWindow):
         imview = view.dp
         if len(imview.imgs) > 0:
             pixbuf = QPixmap(imview.imgs[0][1])
-            self._clwidget.ui.pixUser.setPixmap(pixbuf)
+            pixbuf = pixbuf.scaled(96,96,0,1)
+            self._clwidget.ui.pixUser.setIcon(QIcon(pixbuf))
         nk = view.nick
         self._clwidget.ui.nickName.setHtml(nk.to_HTML_string())
         message = view.psm.to_HTML_string()
