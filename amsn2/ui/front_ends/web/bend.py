@@ -10,17 +10,17 @@ BASEPATH="amsn2/ui/front_ends/web/static"
 
 def uri_path_is_safe(path):
     if not BASEPATH and path[0] == '/':
-        return false
+        return False
     elif path[0:1] == '..':
-        return false
+        return False
 
     l = path.split('/')
     b = [d for d in l if d == '..']
 
     if len(b) >= len(l):
-        return false
+        return False
 
-    return true
+    return True
 
 
 class TinyHTTPServer(object):
