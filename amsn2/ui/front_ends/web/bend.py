@@ -3,10 +3,11 @@ import socket
 import errno
 import logging
 import urlparse
+import re
 import gobject
 
 READ_CHUNK_SIZE = 4096
-BASEPATH="amsn2/ui/front_ends/web/static"
+BASEPATH="amsn2/ui/front_ends/web"
 
 def uri_path_is_safe(path):
     if not BASEPATH and path[0] == '/':
@@ -24,7 +25,7 @@ def uri_path_is_safe(path):
 
 
 class TinyHTTPServer(object):
-    def __init__(self, backend, socket, peer):
+    def __init__(self, backend, socket, peer, rules):
         self._backend = backend
         self._socket = socket
         self._peer = peer
@@ -39,15 +40,14 @@ class TinyHTTPServer(object):
 
         self._is_alive = True
 
-        print socket
-        print self
+        self._rules = rules
+
         gobject.io_add_watch(socket, gobject.IO_IN, self.on_read)
 
     def close(self):
         if self._is_alive:
             self._is_alive = False
             self._socket.close()
-            print "closing %s" % (self)
             self._socket = None
 
     def write(self, data):
@@ -57,6 +57,7 @@ class TinyHTTPServer(object):
             self.on_write(self._socket, gobject.IO_OUT)
 
     def on_headers(self, headers):
+        print "on_headers"
         eol = headers.find("\r\n")
         start_line = headers[:eol]
         method, uri, version = start_line.split(" ")
@@ -64,12 +65,37 @@ class TinyHTTPServer(object):
         if not version.startswith("HTTP/"):
             self.close()
             return
-        print uri
-        if uri == "/" and method == "GET":
-            self.send_file("amsn2.html")
-            return
         scheme, netloc, path, query, fragment = urlparse.urlsplit(uri)
         print "scheme=%s, netloc=%s, path=%s, query=%s, fragment=%s" % (scheme, netloc, path, query, fragment)
+        for (r, get_cb, post_cb) in self._rules:
+            print "pouet"
+            if r.match(path):
+                if method == "GET":
+                    try:
+                        get_cb(self, scheme, netloc, path, query, fragment)
+                    except Exception as e:
+                        print e
+                        self._backend._500(self, scheme, netloc, path, query, fragment)
+                    finally:
+                        return
+                elif method == "POST":
+                    try:
+                        post_cb(self, scheme, netloc, path, query, fragment)
+                    except Exception as e:
+                        print e
+                        self._backend._500(self, scheme, netloc, path, query, fragment)
+                    finally:
+                        return
+                else:
+                    #TODO: head, put, delete, trace, options, connect, patch
+                    self._backend._501(self, scheme, netloc, path, query, fragment)
+                    return
+        self._backend._404(self, scheme, netloc, path, query, fragment)
+
+
+    def on_body(self, body):
+        #TODO
+        pass
 
     def on_read(self, s, c):
         try:
@@ -102,8 +128,8 @@ class TinyHTTPServer(object):
         return self._is_alive
 
     def on_write(self, s, c):
-        print self
         while self._wbuf:
+            print "w"
             try:
                 b = self._socket.send(self._wbuf)
                 self._wbuf = self._wbuf[b:]
@@ -114,11 +140,13 @@ class TinyHTTPServer(object):
                     logging.warning("Write error on %d: %s",
                                     self._socket.fileno(), e)
                     self.close()
+                    print "end w"
                     return self._is_alive
+        print "end w"
         return self._is_alive
 
     def send_file(self, path):
-        f = open(os.path.join(BASEPATH, path), "r")
+        f = open(BASEPATH + path, "r")
         r = f.read()
         f.close()
         self.write("HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n%s"
@@ -138,12 +166,17 @@ class Backend(object):
         self._socket.setblocking(0)
         self._socket.bind(("127.0.0.1", 8080))
         self._socket.listen(1)
+        self._rules = (
+            (re.compile('/$'), self.get_index, None),
+            (re.compile('/static/(.*)'), self.get_static_file, None)
+        )
 
         gobject.io_add_watch(self._socket, gobject.IO_IN, self.on_accept)
 
     def on_accept(self, s, c):
         w = s.accept()
-        TinyHTTPServer(self, *w)
+        print w
+        TinyHTTPServer(self, *w, rules = self._rules)
         return True
 
 
@@ -236,3 +269,27 @@ class Backend(object):
         call = call.rstrip(",") + "]);"
         #self._outq.put_nowait(call)
         print call
+
+    def _404(self, w, scheme, netloc, path, query, fragment):
+        print "404 on %s" % (path,)
+        w.write("HTTP/1.1 404\r\n\r\n")
+        w.close()
+
+    def _500(self, w, scheme, netloc, path, query, fragment):
+        print "500 on %s" % (path,)
+        w.write("HTTP/1.1 500\r\n\r\n")
+        w.close()
+
+    def _501(self, w, scheme, netloc, path, query, fragment):
+        print "501 on %s" % (path,)
+        w.write("HTTP/1.1 501\r\n\r\n")
+        w.close()
+
+    def get_index(self, w, scheme, netloc, path, query, fragment):
+        w.send_file("/static/amsn2.html")
+
+    def get_static_file(self, w, scheme, netloc, path, query, fragment):
+        if uri_path_is_safe(path):
+            w.send_file(path)
+        else:
+            self._404(w, scheme, netloc, path, query, fragment)
