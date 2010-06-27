@@ -43,18 +43,33 @@ class TinyHTTPServer(object):
 
         self._rules = rules
 
-        gobject.io_add_watch(socket, gobject.IO_IN, self.on_read)
+        self._in_id = gobject.io_add_watch(socket.fileno(),
+                             gobject.IO_IN | gobject.IO_PRI,
+                             self.on_read)
+        self._out_id = gobject.io_add_watch(self._socket.fileno(),
+                             gobject.IO_OUT,
+                             self.on_write)
+        self._err_id = gobject.io_add_watch(self._socket.fileno(),
+                             gobject.IO_ERR,
+                             self.on_error)
+        self._hup_id = gobject.io_add_watch(self._socket.fileno(),
+                             gobject.IO_HUP,
+                             self.on_hang_up)
+
 
     def close(self):
         if self._is_alive:
             self._is_alive = False
+            gobject.source_remove(self._in_id)
+            gobject.source_remove(self._out_id)
+            gobject.source_remove(self._err_id)
+            gobject.source_remove(self._hup_id)
             self._socket.close()
             self._socket = None
 
     def write(self, data):
         if self._is_alive:
             self._wbuf += data
-            gobject.io_add_watch(self._socket, gobject.IO_OUT, self.on_write)
             self.on_write(self._socket, gobject.IO_OUT)
 
     def on_headers(self, headers):
@@ -96,6 +111,7 @@ class TinyHTTPServer(object):
         pass
 
     def on_read(self, s, c):
+        print "on read"
         try:
             chunk = self._socket.recv(READ_CHUNK_SIZE)
         except socket.error, e:
@@ -126,6 +142,7 @@ class TinyHTTPServer(object):
         return self._is_alive
 
     def on_write(self, s, c):
+        print "on write"
         while self._wbuf:
             try:
                 b = self._socket.send(self._wbuf)
@@ -138,6 +155,16 @@ class TinyHTTPServer(object):
                                     self._socket.fileno(), e)
                     self.close()
                     return self._is_alive
+        return self._is_alive
+
+    def on_error(self, s, c):
+        print "error"
+        self.close()
+        return self._is_alive
+
+    def on_hang_up(self, s, c):
+        print "hang up"
+        self.close()
         return self._is_alive
 
     def send_file(self, path):
