@@ -166,6 +166,7 @@ class Backend(object):
         self._socket.setblocking(0)
         self._socket.bind(("127.0.0.1", 8080))
         self._socket.listen(1)
+        self._workers = []
         self._rules = (
             (re.compile('/$'), self.get_index, None),
             (re.compile('/static/(.*)'), self.get_static_file, None)
@@ -176,78 +177,8 @@ class Backend(object):
     def on_accept(self, s, c):
         w = s.accept()
         print w
-        TinyHTTPServer(self, *w, rules = self._rules)
-        return True
-
-
-        """
-        self.listeners = {}
-        self._outq = Queue.Queue(0)
-        self._inq = Queue.Queue(0)
-
-
-        def worker(inq, outq):
-            class Root(object):
-                def __init__(self, inq, outq):
-                    self._inq = inq
-                    self._outq = outq
-
-                @cherrypy.expose
-                def index(self):
-                    raise cherrypy.HTTPRedirect("static/amsn2.html")
-
-                @cherrypy.expose
-                def signin(self, u=None, p=None):
-                    self._inq.put_nowait(["signin", u, p])
-
-                @cherrypy.expose
-                def out(self):
-                    l = []
-                    while True:
-                        try:
-                            l.append(self._outq.get_nowait())
-                        except Queue.Empty:
-                            break;
-                    logging.error("OOOOOO")
-                    return l
-
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            cherrypy.config.update({'log.error_file': 'amsn2-web-error.log',
-                                   'log.access_file': 'amsn2-web-access.log',
-                                   'log.screen': False})
-
-            conf = {'/static': {'tools.staticdir.on': True,
-                    'tools.staticdir.dir': os.path.join(current_dir, 'static')},
-                   }
-            cherrypy.quickstart(Root(inq, outq), '/', config=conf)
-        t = threading.Thread(target=worker, args=[self._inq, self._outq])
-        t.daemon = True
-        t.start()
-        """
-
-    def add_listener(self, event, listener):
-        return
-        """
-        if not self.listeners.has_key(event):
-            self.listeners[event] = []
-        self.listeners[event].append(listener)
-        """
-
-    def del_listener(self, event, listener):
-        #TODO
-        pass
-
-    def check_event(self):
-        """
-        # This function is called to check for events
-        while True:
-            try:
-                e = self._inq.get_nowait()
-                self.emit_event(e[0], e[1:])
-            except Queue.Empty:
-                break;
-        # Return true to continue checking events
-        """
+        t = TinyHTTPServer(self, *w, rules = self._rules)
+        self._workers.append(t)
         return True
 
     def emit_event(self, event, *args, **kwargs):

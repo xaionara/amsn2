@@ -7,7 +7,6 @@ class aMSNMainWindow(base.aMSNMainWindow, Backend):
     def __init__(self, amsn_core):
         Backend.__init__(self, amsn_core)
         self._amsn_core = amsn_core
-        self._amsn_core.timer_add(750, self.check_event)
 
     def show(self):
         self.send("showMainWindow", [])
