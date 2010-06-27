@@ -28,6 +28,7 @@ class TinyHTTPServer(object):
     def __init__(self, backend, socket, peer, rules):
         self._backend = backend
         self._socket = socket
+        self._socket.setblocking(0)
         self._peer = peer
 
         self._rbuf = ""
@@ -57,7 +58,6 @@ class TinyHTTPServer(object):
             self.on_write(self._socket, gobject.IO_OUT)
 
     def on_headers(self, headers):
-        print "on_headers"
         eol = headers.find("\r\n")
         start_line = headers[:eol]
         method, uri, version = start_line.split(" ")
@@ -66,9 +66,7 @@ class TinyHTTPServer(object):
             self.close()
             return
         scheme, netloc, path, query, fragment = urlparse.urlsplit(uri)
-        print "scheme=%s, netloc=%s, path=%s, query=%s, fragment=%s" % (scheme, netloc, path, query, fragment)
         for (r, get_cb, post_cb) in self._rules:
-            print "pouet"
             if r.match(path):
                 if method == "GET":
                     try:
@@ -129,7 +127,6 @@ class TinyHTTPServer(object):
 
     def on_write(self, s, c):
         while self._wbuf:
-            print "w"
             try:
                 b = self._socket.send(self._wbuf)
                 self._wbuf = self._wbuf[b:]
@@ -140,9 +137,7 @@ class TinyHTTPServer(object):
                     logging.warning("Write error on %d: %s",
                                     self._socket.fileno(), e)
                     self.close()
-                    print "end w"
                     return self._is_alive
-        print "end w"
         return self._is_alive
 
     def send_file(self, path):
@@ -176,7 +171,6 @@ class Backend(object):
 
     def on_accept(self, s, c):
         w = s.accept()
-        print w
         t = TinyHTTPServer(self, *w, rules = self._rules)
         self._workers.append(t)
         return True
