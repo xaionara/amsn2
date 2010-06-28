@@ -8,7 +8,6 @@ from amsn2.core import aMSNUserInterfaceManager
 # so the guimanager can access its classes
 def load():
     try:
-        import cherrypy
         import amsn2.ui.front_ends.web._web
     except ImportError:
         etype, value, trace = sys.exc_info()
@@ -20,7 +19,6 @@ def load():
 # dependency then register it to the guimanager
 try:
     import imp
-    imp.find_module("cherrypy")
     aMSNUserInterfaceManager.register_frontend("web", sys.modules[__name__])
 
 except ImportError:
