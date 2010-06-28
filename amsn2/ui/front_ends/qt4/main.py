@@ -114,6 +114,7 @@ class aMSNMainWindow(QMainWindow, base.aMSNMainWindow):
                 if item.checkbox: 
                     it.setChecked(True)
                 QObject.connect(it, SIGNAL("triggered()"), item.command)
-                menu.addAction(it)
             elif item.type is MenuItemView.RADIOBUTTONGROUP:
-                pass #TODO : use a QActionGroup with the QActionGroup::exclusive property set to true
+                group = QActionGroup(menu)
+                self.create_menu_items_from_view(group, item.items)
+                menu.addActions(group)
