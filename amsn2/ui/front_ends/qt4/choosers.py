@@ -6,16 +6,21 @@ from PyQt4.QtGui import *
 
 class aMSNFileChooserWindow(base.aMSNFileChooserWindow):
     def __init__(self, filters, directory, callback, parent = None):
-        filename=QFileDialog.getOpenFileName(parent, "aMSN2 -Choose a file", "", "Image Files (*.png *.jpg *.jpeg *.bmp *.gif)")
-        
 
-        #if filters:
-        #    for name in filters.keys():
-        #        filefilter = gtk.FileFilter()
-        #        filefilter.set_name(name)
-        #        for ext in filters[name]:
-        #            filefilter.add_pattern(ext)
-        #        self.add_filter(filefilter)
+        filefilter = QString()
+
+        if filters:
+            first = True
+            for name in filters.keys():
+                if first == False:
+                    filefilter = filefilter + ";;"
+                filefilter = filefilter + name + " ("
+                for ext in filters[name]:
+                    filefilter = filefilter + ext + " "
+                filefilter = filefilter + ")"
+                first = False
+
+        filename=QFileDialog.getOpenFileName(parent, "aMSN2 -Choose a file", "", filefilter)
 
 
         self.callback = callback
