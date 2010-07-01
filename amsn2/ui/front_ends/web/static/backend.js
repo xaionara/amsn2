@@ -458,13 +458,15 @@ function Listening() {
 // init
 $(document).ready(function()
 {
+    /*
     $(".mainWindow").dialog({
         position:['left','top'],
         height: '100%',
         width: '400px',
         stack: false
     });
-    showMainWindow();
+    */
+    //showMainWindow();
     showLogin();
     //Listening();
 });

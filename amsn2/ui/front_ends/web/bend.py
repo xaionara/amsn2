@@ -37,6 +37,7 @@ class TinyHTTPServer(object):
         self._written = 0
 
         self._read_delimiter = "\r\n\r\n"
+        self._bytes_to_read = 0
         self._rcb = self.on_headers
 
         self._is_alive = True
@@ -70,45 +71,63 @@ class TinyHTTPServer(object):
     def write(self, data):
         if self._is_alive:
             self._wbuf += data
-            self.on_write(self._socket, gobject.IO_OUT)
+            self.on_write(self._socket, gobject.IO_IN)
 
     def on_headers(self, headers):
         eol = headers.find("\r\n")
         start_line = headers[:eol]
-        method, uri, version = start_line.split(" ")
-        print "method=%s, uri=%s, version=%s" % (method, uri, version)
-        if not version.startswith("HTTP/"):
+        self._method, uri, self._version = start_line.split(" ")
+        print headers
+        self._headers = {}
+        for line in headers[eol:].splitlines():
+            if line:
+                name, value = line.split(":", 1)
+                self._headers[name] = value.strip()
+        print "method=%s, uri=%s, version=%s" % (self._method, uri, self._version)
+        if not self._version.startswith("HTTP/"):
             self.close()
             return
-        scheme, netloc, path, query, fragment = urlparse.urlsplit(uri)
-        for (r, get_cb, post_cb) in self._rules:
-            if r.match(path):
-                if method == "GET":
+        self._uri = (scheme, netloc, path, query, fragment) = urlparse.urlsplit(uri)
+        if self._method == "GET":
+            for (r, get_cb, _) in self._rules:
+                if r.match(path):
                     try:
-                        get_cb(self, scheme, netloc, path, query, fragment)
+                        get_cb(self, self._uri, self._headers)
                     except Exception as e:
                         print e
-                        self._backend._500(self, scheme, netloc, path, query, fragment)
+                        self._backend._500(self, self._uri, self._headers)
                     finally:
                         return
-                elif method == "POST":
-                    try:
-                        post_cb(self, scheme, netloc, path, query, fragment)
-                    except Exception as e:
-                        print e
-                        self._backend._500(self, scheme, netloc, path, query, fragment)
-                    finally:
-                        return
-                else:
-                    #TODO: head, put, delete, trace, options, connect, patch
-                    self._backend._501(self, scheme, netloc, path, query, fragment)
-                    return
-        self._backend._404(self, scheme, netloc, path, query, fragment)
+            self._backend._404(self, self._uri, self._headers)
+        elif self._method == "POST":
+            if "Content-Length" in self._headers:
+                self._read_delimiter = None
+                self._rcb = self.on_body
+                self._bytes_to_read = int(self._headers["Content-Length"])
+            else:
+                self._backend._400(self, self._uri, self._headers)
+        else:
+            #TODO: head, put, delete, trace, options, connect, patch
+            self._backend._501(self, self._uri, self._headers)
+            return
 
 
     def on_body(self, body):
-        #TODO
-        pass
+        print "ON BODY"
+        if self._method == "POST":
+            path = self._uri[2]
+            for (r, _, post_cb) in self._rules:
+                if r.match(path):
+                    try:
+                        post_cb(self, self._uri, self._headers, body)
+                    except Exception as e:
+                        print e
+                        self._backend._500(self, self._uri, self._headers, body)
+                    finally:
+                        return
+            self._backend._404(self, self._uri, self._headers, body)
+        else:
+            self._backend._501(self, self._uri, self._headers, body)
 
     def on_read(self, s, c):
         print "on read"
@@ -133,16 +152,23 @@ class TinyHTTPServer(object):
             self.close()
             return self._is_alive
 
-        pos = self._rbuf.find(self._read_delimiter)
-        if pos != -1:
-            pos += len(self._read_delimiter)
-            r = self._rbuf[:pos]
-            self._rbuf = self._rbuf[pos:]
+        if self._read_delimiter:
+            pos = self._rbuf.find(self._read_delimiter)
+            if pos != -1:
+                pos += len(self._read_delimiter)
+                r = self._rbuf[:pos]
+                self._rbuf = self._rbuf[pos:]
+                self._rcb(r)
+                self._read -= pos
+        if self._bytes_to_read > 0 and self._read >= self._bytes_to_read:
+            r = self._rbuf[:self._bytes_to_read]
+            self._rbuf = self._rbuf[self._bytes_to_read:]
             self._rcb(r)
+            self._read -= self._bytes_to_read
+            self._bytes_to_read = 0
         return self._is_alive
 
     def on_write(self, s, c):
-        print "on write"
         while self._wbuf:
             try:
                 b = self._socket.send(self._wbuf)
@@ -158,12 +184,10 @@ class TinyHTTPServer(object):
         return self._is_alive
 
     def on_error(self, s, c):
-        print "error"
         self.close()
         return self._is_alive
 
     def on_hang_up(self, s, c):
-        print "hang up"
         self.close()
         return self._is_alive
 
@@ -191,7 +215,8 @@ class Backend(object):
         self._workers = []
         self._rules = (
             (re.compile('/$'), self.get_index, None),
-            (re.compile('/static/(.*)'), self.get_static_file, None)
+            (re.compile('/static/(.*)'), self.get_static_file, None),
+            (re.compile('/signin'), None, self.post_signin),
         )
 
         gobject.io_add_watch(self._socket, gobject.IO_IN, self.on_accept)
@@ -222,26 +247,44 @@ class Backend(object):
         #self._outq.put_nowait(call)
         print call
 
-    def _404(self, w, scheme, netloc, path, query, fragment):
-        print "404 on %s" % (path,)
-        w.write("HTTP/1.1 404\r\n\r\n")
-        w.close()
-
-    def _500(self, w, scheme, netloc, path, query, fragment):
+    def _500(self, w, uri, headers, body = None):
+        path = uri[2]
         print "500 on %s" % (path,)
         w.write("HTTP/1.1 500\r\n\r\n")
         w.close()
 
-    def _501(self, w, scheme, netloc, path, query, fragment):
+    def _404(self, w, uri, headers, body = None):
+        path = uri[2]
+        print "404 on %s" % (path,)
+        w.write("HTTP/1.1 404\r\n\r\n")
+        w.close()
+
+    def _500(self, w, uri, headers, body = None):
+        path = uri[2]
+        print "500 on %s" % (path,)
+        w.write("HTTP/1.1 500\r\n\r\n")
+        w.close()
+
+    def _501(self, w, uri, headers, body = None):
+        path = uri[2]
         print "501 on %s" % (path,)
         w.write("HTTP/1.1 501\r\n\r\n")
         w.close()
 
-    def get_index(self, w, scheme, netloc, path, query, fragment):
+    def get_index(self, w, uri, headers, body = None):
         w.send_file("/static/amsn2.html")
 
-    def get_static_file(self, w, scheme, netloc, path, query, fragment):
+    def get_static_file(self, w, uri, headers, body = None):
+        path = uri[2]
         if uri_path_is_safe(path):
             w.send_file(path)
         else:
-            self._404(w, scheme, netloc, path, query, fragment)
+            self._404(w, uri, headers, body = None)
+
+
+    def post_signin(self, w, uri, headers, body = None):
+        # TODO
+        print "---------"
+        print body
+        print "---------"
+        w.write("HTTP/1.1 200 OK\r\n\r\n")
