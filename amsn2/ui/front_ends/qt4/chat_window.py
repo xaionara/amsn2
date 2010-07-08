@@ -40,6 +40,9 @@ except ImportError, e:
 class aMSNChatWindow(QTabWidget, base.aMSNChatWindow):
     def __init__(self, amsn_core, parent=None):
         QTabWidget.__init__(self, parent)
+        self.setDocumentMode(True)
+        self.setTabsClosable(True)
+        self.setMovable(True)
 
         self._core = amsn_core
 
@@ -69,8 +72,15 @@ class aMSNChatWidget(QWidget, base.aMSNChatWidget):
         self.msgstyle = "margin-left:15px"
         self.infostyle = "margin-left:2px; font-style:italic; color:#6d6d6d"
         self.loadEmoticonList()
+        self.font = QFont() #TODO : load the default font
+        self.ui.inputWidget.setCurrentFont(self.font)
+        self.color = QColor(Qt.black) #TODO : load the default color
+        self.ui.inputWidget.setTextColor(self.color)
 
         QObject.connect(self.ui.actionInsert_Emoticon, SIGNAL("triggered()"), self.showEmoticonList)
+        QObject.connect(self.ui.actionFont, SIGNAL("triggered()"), self.chooseFont)
+        QObject.connect(self.ui.actionColor, SIGNAL("triggered()"), self.chooseColor)
+
 
         #TODO: remove this when papyon is "fixed"...
         sys.setdefaultencoding("utf8")
@@ -89,6 +99,35 @@ class aMSNChatWidget(QWidget, base.aMSNChatWidget):
                return False
            
        return False
+
+
+    def chooseFont(self):
+        txt = self.ui.inputWidget.toPlainText()
+        position = self.ui.inputWidget.textCursor().position()
+        ok = False
+        (font, ok) = QFontDialog.getFont(self.font, self)
+        if ok:
+            self.font = font
+            self.ui.inputWidget.clear()
+            self.ui.inputWidget.setCurrentFont(self.font)
+            self.ui.inputWidget.setPlainText(txt)
+            cursor = self.ui.inputWidget.textCursor()
+            cursor.setPosition(position)
+            self.ui.inputWidget.setTextCursor(cursor)
+
+
+    def chooseColor(self):
+        txt = self.ui.inputWidget.toPlainText()
+        position = self.ui.inputWidget.textCursor().position()
+        color = QColorDialog.getColor(self.color, self)
+        if color.isValid():
+            self.color = color
+            self.ui.inputWidget.clear()
+            self.ui.inputWidget.setTextColor(self.color)
+            self.ui.inputWidget.setPlainText(txt)
+            cursor = self.ui.inputWidget.textCursor()
+            cursor.setPosition(position)
+            self.ui.inputWidget.setTextCursor(cursor)
 
 
     def processInput(self):
@@ -132,10 +171,20 @@ class aMSNChatWidget(QWidget, base.aMSNChatWidget):
 
         msg = QString.fromUtf8(self.ui.inputWidget.toPlainText())
         self.ui.inputWidget.clear()
+        color = self.color
+        hex8 = "%.2x%.2x%.2x" % ((color.red()), (color.green()), (color.blue()))
+        style = papyon.TextFormat.NO_EFFECT
+        info = QFontInfo(self.font)
+        if info.bold(): style |= papyon.TextFormat.BOLD
+        if info.italic():  style |= papyon.TextFormat.ITALIC
+        if self.font.underline(): style |= papyon.TextFormat.UNDERLINE
+        if self.font.strikeOut(): style |= papyon.TextFormat.STRIKETHROUGH
+        font_family = str(info.family())
+        format = papyon.TextFormat(font=font_family, color=hex8, style=style)
         strv = StringView()
         strv.append_text(str(msg))
         ## as we send our msg to the conversation:
-        self._amsn_conversation.send_message(strv)
+        self._amsn_conversation.send_message(strv, format)
         # this one will also notify us of our msg.
         # so no need to do:
         #self.ui.textEdit.append("<b>/me says:</b><br>"+unicode(msg)+"")
