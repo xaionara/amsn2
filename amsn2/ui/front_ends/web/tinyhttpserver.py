@@ -92,7 +92,6 @@ class TinyHTTPServer(object):
         else:
             #TODO: head, put, delete, trace, options, connect, patch
             self._backend._501(self, self._uri, self._headers)
-            return
 
 
     def on_body(self, body):

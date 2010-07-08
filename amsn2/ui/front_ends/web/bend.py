@@ -5,6 +5,7 @@ import logging
 import urlparse
 import re
 import gobject
+import cgi
 
 from constants import BASEPATH
 from tinyhttpserver import TinyHTTPServer
@@ -106,8 +107,14 @@ class Backend(object):
 
 
     def post_signin(self, w, uri, headers, body = None):
-        # TODO
         print "---------"
         print body
         print "---------"
-        w.write("HTTP/1.1 200 OK\r\n\r\n")
+        if (body and 'Content-Type' in headers
+        and headers['Content-Type'] == 'application/x-www-form-urlencoded'):
+            args = cgi.parse_qs(body)
+            print args
+            # TODO
+            w.write("HTTP/1.1 200 OK\r\n\r\n")
+            return
+        self._400(self, w, uri, headers, body)
