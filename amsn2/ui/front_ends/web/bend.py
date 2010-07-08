@@ -71,24 +71,40 @@ class Backend(object):
         #self._outq.put_nowait(call)
         print call
 
-    def _500(self, w, uri, headers, body = None):
+    """
+    400 Bad Request
+    The request contains bad syntax or cannot be fulfilled
+    """
+    def _400(self, w, uri, headers, body = None):
         path = uri[2]
-        print "500 on %s" % (path,)
-        w.write("HTTP/1.1 500\r\n\r\n")
+        print "400 on %s" % (path,)
+        w.write("HTTP/1.1 400\r\n\r\n")
         w.close()
 
+    """
+    404 Not Found
+    The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
+    """
     def _404(self, w, uri, headers, body = None):
         path = uri[2]
         print "404 on %s" % (path,)
         w.write("HTTP/1.1 404\r\n\r\n")
         w.close()
 
+    """
+    500 Internal Server Error
+    A generic error message, given when no more specific message is suitable.
+    """
     def _500(self, w, uri, headers, body = None):
         path = uri[2]
         print "500 on %s" % (path,)
         w.write("HTTP/1.1 500\r\n\r\n")
         w.close()
 
+    """
+    501 Not Implemented
+    The server either does not recognise the request method, or it lacks the ability to fulfill the request.
+    """
     def _501(self, w, uri, headers, body = None):
         path = uri[2]
         print "501 on %s" % (path,)
