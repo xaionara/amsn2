@@ -19,6 +19,7 @@ def load():
 # dependency then register it to the guimanager
 try:
     import imp
+    imp.find_module('gobject') #the only one not from stdlib
     aMSNUserInterfaceManager.register_frontend("web", sys.modules[__name__])
 
 except ImportError:
