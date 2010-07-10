@@ -14,15 +14,12 @@ class aMSNMainWindow(base.aMSNMainWindow, Backend):
 
     def hide(self):
         self.send("hideMainWindow", [])
-        pass
 
     def set_title(self,title):
         self.send("setMainWindowTitle", [title])
-        pass
 
     def set_menu(self,menu):
         print "aMSNMainWindow.setMenu"
-        pass
 
     def __on_show(self):
         self._amsn_core.main_window_shown()

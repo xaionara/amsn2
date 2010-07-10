@@ -16,12 +16,6 @@ class aMSNLoginWindow(object):
         self._main.send("hideLogin");
         self._main.del_listener("signin", self.signin)
 
-    def setUsername(self, listU):
-        self._username = listU.pop()
-
-    def setPassword(self, listP):
-        self._password = listP.pop()
-
     def set_accounts(self, accountviews):
         return
 
