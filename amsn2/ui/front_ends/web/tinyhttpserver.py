@@ -74,7 +74,7 @@ class TinyHTTPServer(object):
         self._uri = (scheme, netloc, path, query, fragment) = urlparse.urlsplit(uri)
         if self._method == "GET":
             for (r, get_cb, _) in self._rules:
-                if r.match(path):
+                if r.match(path) and get_cb:
                     try:
                         get_cb(self, self._uri, self._headers)
                     except Exception as e:
@@ -100,7 +100,7 @@ class TinyHTTPServer(object):
         if self._method == "POST":
             path = self._uri[2]
             for (r, _, post_cb) in self._rules:
-                if r.match(path):
+                if r.match(path) and post_cb:
                     try:
                         post_cb(self, self._uri, self._headers, body)
                     except Exception as e:
