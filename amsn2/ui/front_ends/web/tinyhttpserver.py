@@ -78,20 +78,20 @@ class TinyHTTPServer(object):
                         get_cb(self, self._uri, self._headers)
                     except Exception as e:
                         print e
-                        self._backend._500(self, self._uri, self._headers)
+                        self._500()
                     finally:
                         return
-            self._backend._404(self, self._uri, self._headers)
+            self._404()
         elif self._method == "POST":
             if "Content-Length" in self._headers:
                 self._read_delimiter = None
                 self._rcb = self.on_body
                 self._bytes_to_read = int(self._headers["Content-Length"])
             else:
-                self._backend._400(self, self._uri, self._headers)
+                self._400()
         else:
             #TODO: head, put, delete, trace, options, connect, patch
-            self._backend._501(self, self._uri, self._headers)
+            self._501()
 
 
     def on_body(self, body):
@@ -104,12 +104,12 @@ class TinyHTTPServer(object):
                         post_cb(self, self._uri, self._headers, body)
                     except Exception as e:
                         print e
-                        self._backend._500(self, self._uri, self._headers, body)
+                        self._500()
                     finally:
                         return
-            self._backend._404(self, self._uri, self._headers, body)
+            self._404()
         else:
-            self._backend._501(self, self._uri, self._headers, body)
+            self._501()
 
     def on_read(self, s, c):
         print "on read"
@@ -180,3 +180,44 @@ class TinyHTTPServer(object):
         self.write("HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n%s"
                    % (len(r), r))
         self.close()
+
+    """
+    400 Bad Request
+    The request contains bad syntax or cannot be fulfilled
+    """
+    def _400(self, w, uri, headers, body = None):
+        path = uri[2]
+        print "400 on %s" % (path,)
+        w.write("HTTP/1.1 400\r\n\r\n")
+        w.close()
+
+    """
+    404 Not Found
+    The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
+    """
+    def _404(self, body = None):
+        path = uri[2]
+        print "404 on %s" % (path,)
+        w.write("HTTP/1.1 404\r\n\r\n")
+        w.close()
+
+    """
+    500 Internal Server Error
+    A generic error message, given when no more specific message is suitable.
+    """
+    def _500(self, w, uri, headers, body = None):
+        path = uri[2]
+        print "500 on %s" % (path,)
+        w.write("HTTP/1.1 500\r\n\r\n")
+        w.close()
+
+    """
+    501 Not Implemented
+    The server either does not recognise the request method, or it lacks the ability to fulfill the request.
+    """
+    def _501(self, w, uri, headers, body = None):
+        path = uri[2]
+        print "501 on %s" % (path,)
+        w.write("HTTP/1.1 501\r\n\r\n")
+        w.close()
+
