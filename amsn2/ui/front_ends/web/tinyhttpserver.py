@@ -6,6 +6,7 @@ import urlparse
 import re
 import gobject
 from constants import READ_CHUNK_SIZE
+import traceback
 
 class TinyHTTPServer(object):
     def __init__(self, backend, socket, peer, rules):
@@ -77,7 +78,7 @@ class TinyHTTPServer(object):
                     try:
                         get_cb(self, self._uri, self._headers)
                     except Exception as e:
-                        print e
+                        traceback.print_exc()
                         self._500()
                     finally:
                         return
@@ -103,7 +104,7 @@ class TinyHTTPServer(object):
                     try:
                         post_cb(self, self._uri, self._headers, body)
                     except Exception as e:
-                        print e
+                        traceback.print_exc()
                         self._500()
                     finally:
                         return
