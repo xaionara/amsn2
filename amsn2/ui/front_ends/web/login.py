@@ -1,7 +1,9 @@
+from papyon import Presence
 class aMSNLoginWindow(object):
     def __init__(self, core, main):
         self._main = main
         self._core = core
+        self._account_views = []
 
     def __del__(self):
         self._main.login_window = None
@@ -13,21 +15,26 @@ class aMSNLoginWindow(object):
         self._main.login_window = None
 
     def set_accounts(self, accountviews):
-        #TODO
-        pass
+        print "accoutviews:"
+        print accountviews
+        self._account_views = accountviews
 
     def signin(self, u, p, *args, **kwargs):
+        print "1"
         accv = self._core._ui_manager.get_accountview_from_email(u)
-        accv.password = password
+        accv.password = p
 
-        accv.presence = self.presence_key
+        accv.presence = Presence.ONLINE
 
         accv.save = False
         accv.save_password = False
         accv.autologin = False
 
-        logging.error("signing in")
+        print "2"
         self._core.signin_to_account(self, accv)
+
+    def signing_in(self):
+        self._main.send("signingIn")
 
     def on_connecting(self, progress, msg):
         self._main.send("onConnecting", msg)

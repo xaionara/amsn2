@@ -40,6 +40,7 @@ class Backend(object):
         self._rules = (
             (re.compile('/$'), self.get_index, None),
             (re.compile('/static/(.*)'), self.get_static_file, None),
+            (re.compile('/out$'), self.out, self.out),
             (re.compile('/signin'), None, self.post_signin),
         )
 
@@ -60,6 +61,9 @@ class Backend(object):
                 except:
                     pass
         """
+
+    def out(self, w, uri, headers, body = None):
+        pass
 
     def send(self, event, *args, **kwargs):
         # The backend sent a message to the JS client
@@ -93,7 +97,7 @@ class Backend(object):
         and headers['Content-Type'] == 'application/x-www-form-urlencoded'):
             args = cgi.parse_qs(body)
             print args
-            self.login_window.signin(args['username'], args['password'])
+            self.login_window.signin(args['username'][0], args['password'][0])
             # TODO
             w.write("HTTP/1.1 200 OK\r\n\r\n")
             return
