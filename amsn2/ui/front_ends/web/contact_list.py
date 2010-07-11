@@ -55,12 +55,7 @@ class aMSNContactListWidget(object):
         self._main = parent._main
         self.contacts = {}
         self.groups = {}
-        self._main.addListener("contactClicked",self.contactClicked)
-        clm = amsn_core._contactlist_manager
-        clm.register(clm.CLVIEW_UPDATED, self.contactListUpdated)
-        clm.register(clm.GROUPVIEW_UPDATED, self.groupUpdated)
-        clm.register(clm.CONTACTVIEW_UPDATED, self.contactUpdated)
-        
+
     def contactClicked(self,uidL):
         uid = uidL.pop()
         try:
@@ -72,12 +67,10 @@ class aMSNContactListWidget(object):
     def show(self):
         """ Show the contact list widget """
         self._main.send("showContactListWidget",[])
-        pass
 
     def hide(self):
         """ Hide the contact list widget """
         self._main.send("hideContactListWidget",[])
-        pass
 
     def contactlist_updated(self, clView):
         """ This method will be called when the core wants to notify
@@ -89,8 +82,7 @@ class aMSNContactListWidget(object):
         @cl : a ContactListView containing the list of groups contained in
         the contact list which will contain the list of ContactViews
         for all the contacts to show in the group."""
-        self._main.send("contactListUpdated",clView.group_ids)
-        pass
+        self._main.send("contactListUpdated", clView.group_ids)
 
     def group_updated(self, groupView):
         """ This method will be called to notify the contact list
@@ -101,8 +93,8 @@ class aMSNContactListWidget(object):
         A contact can also be added or removed from a group using this method
         """
         self.groups[groupView.uid]=groupView
-        self._main.send("groupUpdated",[groupView.uid,",".join(groupView.contact_ids),str(groupView.name)])
-        pass
+        self._main.send("groupUpdated",
+                        [groupView.uid,",".join(groupView.contact_ids),str(groupView.name)])
 
     def contact_updated(self, contactView):
         """ This method will be called to notify the contact list
@@ -116,5 +108,4 @@ class aMSNContactListWidget(object):
         """
         self.contacts[contactView.uid]=contactView
         self._main.send("contactUpdated", [contactView.uid, str(contactView.name)])
-        pass
 

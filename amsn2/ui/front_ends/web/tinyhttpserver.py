@@ -61,13 +61,13 @@ class TinyHTTPServer(object):
         eol = headers.find("\r\n")
         start_line = headers[:eol]
         self._method, uri, self._version = start_line.split(" ")
-        print headers
         self._headers = {}
         for line in headers[eol:].splitlines():
             if line:
                 name, value = line.split(":", 1)
                 self._headers[name] = value.strip()
         print "method=%s, uri=%s, version=%s" % (self._method, uri, self._version)
+        print headers
         if not self._version.startswith("HTTP/"):
             self.close()
             return
@@ -85,9 +85,13 @@ class TinyHTTPServer(object):
             self._404()
         elif self._method == "POST":
             if "Content-Length" in self._headers:
-                self._read_delimiter = None
-                self._rcb = self.on_body
-                self._bytes_to_read = int(self._headers["Content-Length"])
+                r = int(self._headers["Content-Length"])
+                if r > 0:
+                    self._read_delimiter = None
+                    self._rcb = self.on_body
+                    self._bytes_to_read = r
+                else:
+                    self._400()
             else:
                 self._400()
         else:

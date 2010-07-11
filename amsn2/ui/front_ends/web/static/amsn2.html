@@ -12,11 +12,9 @@
   <body>
     <div class="splashScreen"></div>
     <div class="login">
-      <form method="post" action="signin">
-      Username:<input type="text" name="username" /> <br/>
-      Password:<input type="password" name="password" /> <br/>
-      <input type="submit" value="SignIn" name="signin" />
-      </form>
+      Username:<input id='u' name='u' type="text" /> <br/>
+      Password:<input id='p' name='p' type="password" /> <br/>
+      <input type="submit" value="SignIn" id="signin" />
     </div>
     <div class="mainWindow">
       <pre class="message">
@@ -26,5 +24,14 @@
         <div class="title"></div>
       </div>
     </div>
+
+    <script type="text/javascript">
+      $('#signin').submit(function(){
+        $.post('/signin', {username: $('#u').val(),
+                           password: $('#p').val()});
+        return false;
+      });
+    </script>
+
   </body>
 </html>

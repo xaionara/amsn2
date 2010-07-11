@@ -63,7 +63,8 @@ class Backend(object):
         """
 
     def out(self, w, uri, headers, body = None):
-        pass
+        print "OUT"
+        w._404()
 
     def send(self, event, *args, **kwargs):
         # The backend sent a message to the JS client
@@ -94,11 +95,11 @@ class Backend(object):
         print body
         print "---------"
         if (body and 'Content-Type' in headers
-        and headers['Content-Type'] == 'application/x-www-form-urlencoded'):
+        and headers['Content-Type'].startswith('application/x-www-form-urlencoded')):
             args = cgi.parse_qs(body)
             print args
             self.login_window.signin(args['username'][0], args['password'][0])
-            # TODO
             w.write("HTTP/1.1 200 OK\r\n\r\n")
+            w.close()
             return
         w._400()
