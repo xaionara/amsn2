@@ -138,7 +138,7 @@ class aMSNCore(object):
         print "Signing in to account %s" % (accountview.email)
         self._account = self._account_manager.signin_to_account(accountview)
         self._account.login = login_window
-        self._account.login.signin()
+        self._account.login.signing_in()
         self._account.client = protocol.Client(self, self._account)
         self._account.client.connect(accountview.email, accountview.password)
 

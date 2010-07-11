@@ -71,58 +71,21 @@ class Backend(object):
         #self._outq.put_nowait(call)
         print call
 
-    """
-    400 Bad Request
-    The request contains bad syntax or cannot be fulfilled
-    """
-    def _400(self, w, uri, headers, body = None):
-        path = uri[2]
-        print "400 on %s" % (path,)
-        w.write("HTTP/1.1 400\r\n\r\n")
-        w.close()
-
-    """
-    404 Not Found
-    The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
-    """
-    def _404(self, w, uri, headers, body = None):
-        path = uri[2]
-        print "404 on %s" % (path,)
-        w.write("HTTP/1.1 404\r\n\r\n")
-        w.close()
-
-    """
-    500 Internal Server Error
-    A generic error message, given when no more specific message is suitable.
-    """
-    def _500(self, w, uri, headers, body = None):
-        path = uri[2]
-        print "500 on %s" % (path,)
-        w.write("HTTP/1.1 500\r\n\r\n")
-        w.close()
-
-    """
-    501 Not Implemented
-    The server either does not recognise the request method, or it lacks the ability to fulfill the request.
-    """
-    def _501(self, w, uri, headers, body = None):
-        path = uri[2]
-        print "501 on %s" % (path,)
-        w.write("HTTP/1.1 501\r\n\r\n")
-        w.close()
-
     def get_index(self, w, uri, headers, body = None):
         w.send_file(BASEPATH + "/static/amsn2.html")
 
     def get_static_file(self, w, uri, headers, body = None):
         path = uri[2]
         if uri_path_is_safe(path):
-            w.send_file(path)
+            w.send_file(BASEPATH + path)
         else:
-            self._404(w, uri, headers, body = None)
+            w._404()
 
 
     def post_signin(self, w, uri, headers, body = None):
+        if self.login_window is None:
+            w._400()
+            return
         print "---------"
         print body
         print "---------"
@@ -130,7 +93,8 @@ class Backend(object):
         and headers['Content-Type'] == 'application/x-www-form-urlencoded'):
             args = cgi.parse_qs(body)
             print args
+            self.login_window.signin(args['username'], args['password'])
             # TODO
             w.write("HTTP/1.1 200 OK\r\n\r\n")
             return
-        self._400(self, w, uri, headers, body)
+        w._400()

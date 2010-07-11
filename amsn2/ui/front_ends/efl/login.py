@@ -169,7 +169,7 @@ class aMSNLoginWindow(elementary.Layout, base.aMSNLoginWindow):
             self.autologin.state_set(acc.autologin)
 
 
-    def signin(self):
+    def signing_in(self):
         ### Autologin change: This method is no longer used to tell the core to start the login
 
         #email = elementary.Entry.markup_to_utf8(self.username.entry_get()).strip()
