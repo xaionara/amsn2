@@ -29,8 +29,10 @@
 
     <script type="text/javascript">
       $('#signin').submit(function(){
-        $.post('/signin', {username: $('#u').val(),
-                           password: $('#p').val()});
+        $.post('/signin',
+               {username: $('#u').val(),
+                password: $('#p').val()},
+               function() { Listening();} );
         return false;
       });
     </script>

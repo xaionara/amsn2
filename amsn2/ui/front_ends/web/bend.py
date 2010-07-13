@@ -45,6 +45,7 @@ class Backend(object):
         )
 
         gobject.io_add_watch(self._socket, gobject.IO_IN, self.on_accept)
+        self._q = ""
 
     def on_accept(self, s, c):
         w = s.accept()
@@ -63,8 +64,9 @@ class Backend(object):
         """
 
     def out(self, w, uri, headers, body = None):
-        print "OUT"
-        w._404()
+        print ">>> %s" % (self._q,)
+        w._200(self._q)
+        self._q = ""
 
     def send(self, event, *args, **kwargs):
         # The backend sent a message to the JS client
@@ -73,8 +75,7 @@ class Backend(object):
         for value in args:
             call += "'" + str(value).encode('string_escape') + "',"
         call = call.rstrip(",") + "]);"
-        #self._outq.put_nowait(call)
-        print call
+        self._q += call
 
     def get_index(self, w, uri, headers, body = None):
         w.send_file(BASEPATH + "/static/amsn2.html")
@@ -91,13 +92,10 @@ class Backend(object):
         if self.login_window is None:
             w._400()
             return
-        print "---------"
-        print body
-        print "---------"
         if (body and 'Content-Type' in headers
         and headers['Content-Type'].startswith('application/x-www-form-urlencoded')):
             args = cgi.parse_qs(body)
-            print args
+            print "<<< %s" %(args,)
             self.login_window.signin(args['username'][0], args['password'][0])
             w.write("HTTP/1.1 200 OK\r\n\r\n")
             w.close()

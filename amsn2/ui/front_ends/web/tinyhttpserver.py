@@ -67,7 +67,6 @@ class TinyHTTPServer(object):
                 name, value = line.split(":", 1)
                 self._headers[name] = value.strip()
         print "method=%s, uri=%s, version=%s" % (self._method, uri, self._version)
-        print headers
         if not self._version.startswith("HTTP/"):
             self.close()
             return
@@ -100,7 +99,6 @@ class TinyHTTPServer(object):
 
 
     def on_body(self, body):
-        print "ON BODY"
         if self._method == "POST":
             path = self._uri[2]
             for (r, _, post_cb) in self._rules:
@@ -117,7 +115,6 @@ class TinyHTTPServer(object):
             self._501()
 
     def on_read(self, s, c):
-        print "on read"
         try:
             chunk = self._socket.recv(READ_CHUNK_SIZE)
         except socket.error, e:
@@ -186,13 +183,20 @@ class TinyHTTPServer(object):
                    % (len(r), r))
         self.close()
 
+    def _200(self, body = None):
+        if body:
+            self.write("HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n%s"
+                       % (len(body), body))
+        else:
+            self.write("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n")
+        self.close()
+
     """
     400 Bad Request
     The request contains bad syntax or cannot be fulfilled
     """
     def _400(self, body = None):
         path = self._uri[2]
-        print "400 on %s" % (path,)
         self.write("HTTP/1.1 400\r\n\r\n")
         self.close()
 
@@ -202,7 +206,6 @@ class TinyHTTPServer(object):
     """
     def _404(self, body = None):
         path = self._uri[2]
-        print "404 on %s" % (path,)
         self.write("HTTP/1.1 404\r\n\r\n")
         self.close()
 
@@ -212,7 +215,6 @@ class TinyHTTPServer(object):
     """
     def _500(self, body = None):
         path = self._uri[2]
-        print "500 on %s" % (path,)
         self.write("HTTP/1.1 500\r\n\r\n")
         self.close()
 
@@ -222,7 +224,6 @@ class TinyHTTPServer(object):
     """
     def _501(self, body = None):
         path = self._uri[2]
-        print "501 on %s" % (path,)
         self.write("HTTP/1.1 501\r\n\r\n")
         self.close()
 
