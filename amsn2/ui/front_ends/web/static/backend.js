@@ -434,10 +434,10 @@ function Sending()
             (xhr=$.post("amsn2.php", {in:ReqSend.join("\n")},
                         function(data,textStatus){})).onreadystatechange = function() {
                 if (xhr.readyState == 4)
-                    setTimeout(Sending, 5e2);
+                    setTimeout(Sending, 500);
             }
         } else {
-            setTimeout(Sending, 5e2);
+            setTimeout(Sending, 500);
         }
     } catch(e) {}
 }
@@ -450,7 +450,7 @@ function Listening() {
             eval(data);
         },'text')).onreadystatechange = function() {
             if (xhr.readyState == 4)
-                setTimeout(Listening, 5e2);
+                setTimeout(Listening, 500);
         };
     } catch(e) {}
 }
