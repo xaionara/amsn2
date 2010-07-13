@@ -142,7 +142,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
     def signout(self):
         pass
 
-    def signin(self):
+    def signing_in(self):
         self.loginThrobber = LoginThrobber(self)
         self._parent.fadeIn(self.loginThrobber)
 

@@ -1,44 +1,40 @@
+from papyon import Presence
 class aMSNLoginWindow(object):
-    def __init__(self, amsn_core, main):
+    def __init__(self, core, main):
         self._main = main
-        self._amsn_core = amsn_core
+        self._core = core
+        self._account_views = []
 
     def __del__(self):
-        return
-        self._main.del_listener("signin", self.signin)
+        self._main.login_window = None
 
     def show(self):
-        return
-        self._main.add_listener("signin", self.signin)
+        self._main.login_window = self
 
     def hide(self):
-        return
-        self._main.send("hideLogin");
-        self._main.del_listener("signin", self.signin)
-
-    def setUsername(self, listU):
-        self._username = listU.pop()
-
-    def setPassword(self, listP):
-        self._password = listP.pop()
+        self._main.login_window = None
 
     def set_accounts(self, accountviews):
-        return
+        print "accoutviews:"
+        print accountviews
+        self._account_views = accountviews
 
     def signin(self, u, p, *args, **kwargs):
-        accv = self._amsn_core._ui_manager.get_accountview_from_email(u)
-        accv.password = password
+        print "1"
+        accv = self._core._ui_manager.get_accountview_from_email(u)
+        accv.password = p
 
-        accv.presence = self.presence_key
+        accv.presence = Presence.ONLINE
 
         accv.save = False
         accv.save_password = False
         accv.autologin = False
 
-        logging.error("signing in")
-        self._amsn_core.quit()
-        self._amsn_core.signin_to_account(self, accv)
+        print "2"
+        self._core.signin_to_account(self, accv)
+
+    def signing_in(self):
+        self._main.send("signingIn")
 
     def on_connecting(self, progress, msg):
-        return
         self._main.send("onConnecting", msg)
