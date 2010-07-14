@@ -57,6 +57,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         self._parent = parent
         self.loginThrobber = None
         QObject.connect(self.ui.pushSignIn, SIGNAL("clicked()"), self.__login_clicked)
+        QObject.connect(self.ui.linePassword, SIGNAL("returnPressed()"), self.__login_clicked)
         QObject.connect(self.ui.styleDesktop, SIGNAL("clicked()"), self.setTestStyle)
         QObject.connect(self.ui.styleRounded, SIGNAL("clicked()"), self.setTestStyle)
         QObject.connect(self.ui.styleWLM, SIGNAL("clicked()"), self.setTestStyle)
@@ -135,7 +136,7 @@ class aMSNLoginWindow(StyledWidget, base.aMSNLoginWindow):
         accv.save = self.ui.checkRememberMe.isChecked()
         accv.save_password = self.ui.checkRememberPass.isChecked()
         accv.autologin = self.ui.checkSignInAuto.isChecked()
-
+        print accv
         self._amsn_core.signin_to_account(self, accv)
 
     def signout(self):
