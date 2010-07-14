@@ -321,6 +321,12 @@ function hideSplashScreen()
     $("div.splashScreen").hide("slow");
 }
 
+
+function myInfoUpdated()
+{
+  // TODO
+}
+
 // contact_list
 var contactList = new ContactList();
 
