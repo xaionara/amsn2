@@ -346,17 +346,19 @@ function contactListUpdated(groupsL)
 
 function groupUpdated(groupV)
 {
-    var uid = groupV[0];
-    var contact_ids = groupV[1];
-    var name = groupV[2];
-    var group = contactList.getGroup(uid);
-    group.setName(name);
+  var uid = groupV[0];
+  var contact_ids = groupV[1];
+  var name = groupV[2];
+  var group = contactList.getGroup(uid);
+  group.setName(name);
+  if (contact_ids) {
     var cuids = contact_ids.split(',');
     var clist = [];
     $.each(cuids, function(){
         clist.push(contactList.getContact(cuids.shift()));
     });
     group.setContacts(clist);
+  }
 }
 
 function contactUpdated(contactV)
@@ -446,7 +448,6 @@ function Sending()
 function Listening() {
   $.get("/out", function(data){
     setTimeout(Listening, 5000);
-    console.log("data="+data);
     //try {
       eval(data);
     //} catch(e) {}
