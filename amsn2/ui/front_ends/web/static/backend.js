@@ -292,14 +292,15 @@ function onConnecting(mesgL)
 function showLogin()
 {
     $("div.login").show("slow");
-    $("#signin").click(function() {
-        $.post("/signin", {u:$("#username").val(), p:$("#password").val()},
-               function(data, textStatus){});
-    });
 }
 function hideLogin()
 {
     $("div.login").hide("slow");
+}
+
+function signingIn()
+{
+    hideLogin();
 }
 
 // splash screen
@@ -443,30 +444,24 @@ function Sending()
 }
 */
 function Listening() {
-    try {
-        var xhr;
-        (xhr=$.get("/out", null, function (data, textStatus) {
-            console.log(data)
-            eval(data);
-        },'text')).onreadystatechange = function() {
-            if (xhr.readyState == 4)
-                setTimeout(Listening, 500);
-        };
-    } catch(e) {}
+  $.get("/out", function(data){
+    setTimeout(Listening, 5000);
+    console.log("data="+data);
+    //try {
+      eval(data);
+    //} catch(e) {}
+  });
 }
 
 // init
 $(document).ready(function()
 {
-    /*
     $(".mainWindow").dialog({
         position:['left','top'],
         height: '100%',
         width: '400px',
         stack: false
     });
-    */
-    //showMainWindow();
     showLogin();
     //Listening();
 });
