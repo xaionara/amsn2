@@ -9,12 +9,12 @@
 
 class aMSNContactListWindow(object):
     """ This interface represents the main Contact List Window
-        self._clwiget is an aMSNContactListWidget 
+        self._clwidget is an aMSNContactListWidget
     """
 
     def __init__(self, amsn_core, parent):
         self._main = parent
-        self._clwiget = aMSNContactListWidget(amsn_core,self)
+        self._clwidget = aMSNContactListWidget(amsn_core,self)
         pass
 
     def show(self):
@@ -48,6 +48,9 @@ class aMSNContactListWindow(object):
         currentMedia,...)"""
         self._main.send("myInfoUpdated",[str(view.name)])
         pass
+
+    def get_contactlist_widget(self):
+        return self._clwidget
 
 class aMSNContactListWidget(object):
     """ This interface implements the contact list of the UI """
