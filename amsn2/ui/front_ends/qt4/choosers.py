@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from amsn2.ui import base
 import image
 from PyQt4.QtCore import *
@@ -20,14 +21,14 @@ class aMSNFileChooserWindow(base.aMSNFileChooserWindow):
                 filefilter = filefilter + ")"
                 first = False
 
-        filename=QFileDialog.getOpenFileName(parent, "aMSN2 -Choose a file", "", filefilter)
+        filename=QFileDialog.getOpenFileName(parent, "aMSN2 - Choose a file", "", filefilter)
 
 
         self.callback = callback
         if str(filename)=="":
-        	pass
+            pass
         else:
-        	self.callback(filename)
+            self.callback(filename)
 
 
 
@@ -51,7 +52,7 @@ class aMSNDPChooserWindow(base.aMSNDPChooserWindow, QDialog):
         self.buttonOk= QPushButton("Ok")
         QObject.connect(self.buttonOk, SIGNAL("clicked()"), self._on_ok_clicked)
         self.buttonCancel = QPushButton("Cancel")
-        QObject.connect(self.buttonCancel, SIGNAL("clicked()"), self.destroy)
+        QObject.connect(self.buttonCancel, SIGNAL("clicked()"), self.reject)
         self.buttonOpen = QPushButton("Open File")
         QObject.connect(self.buttonOpen, SIGNAL("clicked()"), self._open_file)
         self.vboxlayout = QVBoxLayout()
@@ -75,15 +76,15 @@ class aMSNDPChooserWindow(base.aMSNDPChooserWindow, QDialog):
 
 
     def _dp_chosen(self, path):
-        self.callback(str(path))
-        self.destroy()
+        self.callback(str(path))    
+        self.done(0)
         
         
     def _on_ok_clicked(self):
         item = self.iconview.currentItem()
         if item == None:
-        	return
-        
+            return
+
         path = item.data(Qt.UserRole)
         path = path.toString()
         self._dp_chosen(path)
