@@ -68,14 +68,29 @@ class Backend(object):
         w._200(self._q)
         self._q = ""
 
-    def send(self, event, *args, **kwargs):
+    def _args2JS(self, *args):
+        call = ""
+        for value in args:
+            t = type(value).__name__
+            if (t == 'tuple' or t == 'list'):
+                call += '['+ self._args2JS(*value)+']'
+            elif (t == 'str'):
+                call += "'" + str(value).encode('string_escape') + "',"
+            elif (t == 'int'):
+                call += str(value) + ","
+            else:
+                print t
+                call += "'" + str(value).encode('string_escape') + "',"
+        return call.rstrip(",")
+
+
+    def send(self, event, *args):
         # The backend sent a message to the JS client
         # select the JS function to call depending on the type of event
-        call = event + "(["
-        for value in args:
-            call += "'" + str(value).encode('string_escape') + "',"
-        call = call.rstrip(",") + "]);"
-        self._q += call
+        if args:
+            self._q += event + '(' + self._args2JS(*args) + ');'
+        else:
+            self._q += event + '();'
 
     def get_index(self, w, uri, headers, body = None):
         w.send_file(BASEPATH + "/static/amsn2.html")
