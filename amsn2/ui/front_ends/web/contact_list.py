@@ -15,39 +15,33 @@ class aMSNContactListWindow(object):
     def __init__(self, amsn_core, parent):
         self._main = parent
         self._clwidget = aMSNContactListWidget(amsn_core,self)
-        pass
 
     def show(self):
         """ Show the contact list window """
-        self._main.send("showContactListWindow",[])
-        pass
+        self._main.send("showContactListWindow")
 
     def hide(self):
         """ Hide the contact list window """
-        self._main.send("hideContactListWindow",[])
-        pass
+        self._main.send("hideContactListWindow")
 
     def set_title(self, text):
         """ This will allow the core to change the current window's title
         @text : a string
         """
-        self._main.send("setContactListTitle",[text])
-        pass
+        self._main.send("setContactListTitle", text)
 
     def set_menu(self, menu):
         """ This will allow the core to change the current window's main menu
         @menu : a MenuView
         """
         self._main.send("setMenu")
-        pass
 
     def my_info_updated(self, view):
         """ This will allow the core to change pieces of information about
         ourself, such as DP, nick, psm, the current media being played,...
         @view: the contactView of the ourself (contains DP, nick, psm,
         currentMedia,...)"""
-        self._main.send("myInfoUpdated",[str(view.nick)])
-        pass
+        self._main.send("myInfoUpdated", str(view.nick))
 
     def get_contactlist_widget(self):
         return self._clwidget
@@ -69,11 +63,11 @@ class aMSNContactListWidget(object):
 
     def show(self):
         """ Show the contact list widget """
-        self._main.send("showContactListWidget",[])
+        self._main.send("showContactListWidget")
 
     def hide(self):
         """ Hide the contact list widget """
-        self._main.send("hideContactListWidget",[])
+        self._main.send("hideContactListWidget")
 
     def contactlist_updated(self, clView):
         """ This method will be called when the core wants to notify
@@ -97,7 +91,9 @@ class aMSNContactListWidget(object):
         """
         self.groups[groupView.uid]=groupView
         self._main.send("groupUpdated",
-                        [groupView.uid,",".join(groupView.contact_ids),str(groupView.name)])
+                        groupView.uid,
+                        str(groupView.name),
+                        groupView.contact_ids)
 
     def contact_updated(self, contactView):
         """ This method will be called to notify the contact list
@@ -110,5 +106,5 @@ class aMSNContactListWidget(object):
         in the affects groups.
         """
         self.contacts[contactView.uid]=contactView
-        self._main.send("contactUpdated", [contactView.uid, str(contactView.name)])
+        self._main.send("contactUpdated", contactView.uid, str(contactView.name))
 
