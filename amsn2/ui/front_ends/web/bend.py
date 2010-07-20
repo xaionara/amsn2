@@ -64,7 +64,8 @@ class Backend(object):
         """
 
     def out(self, w, uri, headers, body = None):
-        print ">>> %s" % (self._q,)
+        if len(self._q):
+            print ">>> %s" % (self._q,)
         w._200(self._q)
         self._q = ""
 
