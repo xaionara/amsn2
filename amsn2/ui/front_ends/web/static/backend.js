@@ -280,14 +280,13 @@ function hideMainWindow()
 {
     $("div.mainWindow").hide("slow");
 }
-function setMainWindowTitle(titleL)
+function setMainWindowTitle(title)
 {
-    $(".mainWindow .ui-dialog-title").text(titleL.pop());
+    $(".mainWindow .ui-dialog-title").text(title);
 }
-function onConnecting(mesgL)
+function onConnecting(msg)
 {
-    var mesg = mesgL.pop();
-    $(".message").text(mesg);
+    $(".message").text(msg);
 }
 function showLogin()
 {
@@ -308,9 +307,9 @@ function setImageSplashScreen()
 {
     // TODO
 }
-function setTextSplashScreen(textL)
+function setTextSplashScreen(txt)
 {
-    $("div.splashScreen").text(textL.pop());
+    $("div.splashScreen").text(txt);
 }
 function showSplashScreen()
 {
@@ -378,16 +377,13 @@ function contactUpdated(contactV)
 var chatWindows = {};
 var chatWidgets = {};
 
-function newChatWindow(uidL)
+function newChatWindow(uid)
 {
-    var uid = uidL.pop();
     chatWindows[uid] = new ChatWindow(uid);
 }
 
-function addChatWidget(uidL)
+function addChatWidget(windowUid, widgetUid)
 {
-    var windowUid = uidL.shift();
-    var widgetUid = uidL.shift();
     chatWindows[windowUid].addChatWidget(chatWidgets[widgetUid]);
 }
 
@@ -403,9 +399,8 @@ function hideChatWindow(uidL)
     chatWindows[uid].hide();
 }
 
-function newChatWidget(uidL)
+function newChatWidget(uid)
 {
-    var uid = uidL.pop();
     chatWidgets[uid] = new ChatWidget(uid);
 }
 
