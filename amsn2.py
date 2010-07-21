@@ -10,8 +10,8 @@ locale.setlocale(locale.LC_ALL, '')
 from amsn2.core import aMSNCore
 
 if __name__ == '__main__':
-    account = dumpen1@yahoo.se
-    passwd = hejalla
+    account = 
+    passwd = 
     default_front_end = "gtk"
 
     parser = optparse.OptionParser()
